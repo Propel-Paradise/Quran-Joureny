@@ -199,7 +199,8 @@
       <div class="settings-section">
         <h3>Account</h3>
         <p class="desc">Signed in as <span id="settings-email" style="font-weight:500;color:#0f1411"></span></p>
-        <div id="settings-org-name" style="font-size:13px;color:#737773"></div>
+        <div id="settings-org-name" style="font-size:13px;color:#737773;margin-bottom:14px"></div>
+        <button class="btn btn-secondary" onclick="openChangePasswordModal()">Change Password</button>
       </div>
       <div class="settings-section">
         <h3>Subscription</h3>
@@ -299,6 +300,10 @@
         <div class="field"><label>Juz #</label><input type="number" id="log-sabaq-juz" min="1" max="30" placeholder="e.g. 5" /></div>
         <div class="field"><label>Pages</label><input type="number" id="log-sabaq-pages" min="0" placeholder="e.g. 2" /></div>
       </div>
+      <div class="field">
+        <label>Lines</label>
+        <input type="number" id="log-sabaq-lines" min="0" max="15" placeholder="e.g. 5 (if less than a full page)" />
+      </div>
       <div class="field"><label>Result</label>
         <div class="quality-row">
           <div class="quality-btn" onclick="setQuality('sabaq','Excellent')" id="sq-excellent">Excellent</div>
@@ -379,6 +384,28 @@
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModals()">Go Back</button>
         <button class="btn btn-danger" id="cancel-btn" onclick="cancelSubscription()">Deactivate Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHANGE PASSWORD MODAL -->
+  <div class="modal-overlay" id="change-password-modal" style="display:none">
+    <div class="modal">
+      <h2>Change Password</h2>
+      <p class="sub">Set a new password for your account.</p>
+      <div id="cp-error" class="error-box" style="display:none"></div>
+      <div id="cp-success" class="success-box" style="display:none"></div>
+      <div class="field">
+        <label>New Password</label>
+        <input type="password" id="cp-new-password" placeholder="Minimum 8 characters" />
+      </div>
+      <div class="field">
+        <label>Confirm Password</label>
+        <input type="password" id="cp-new-password2" placeholder="Re-enter password" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
+        <button class="btn btn-primary" id="cp-btn" onclick="changePassword()">Update Password</button>
       </div>
     </div>
   </div>
@@ -573,7 +600,7 @@
       }
       el.innerHTML = logs.map(l => {
         const dateStr = new Date(l.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const sabaqStr = [l.sabaq_juz ? `Juz ${l.sabaq_juz}` : '', l.sabaq_pages ? `${l.sabaq_pages}p` : ''].filter(Boolean).join(' · ') || '—';
+        const sabaqStr = [l.sabaq_juz ? `Juz ${l.sabaq_juz}` : '', l.sabaq_pages ? `${l.sabaq_pages}p` : '', l.sabaq_lines ? `${l.sabaq_lines} lines` : ''].filter(Boolean).join(' · ') || '—';
         const sabqiStr = l.sabqi_pages ? `${l.sabqi_pages}p` : (l.sabqi_juz || '—');
         const manzilStr = [
           l.manzil_pages != null ? `${l.manzil_pages}${l.manzil_fraction ? l.manzil_fraction : ''} Juz` : (l.manzil_fraction ? l.manzil_fraction + ' Juz' : ''),
@@ -630,7 +657,7 @@
     function closeModals() {
       document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.error-box').forEach(el => el.style.display = 'none');
-      ['new-student-name','new-student-juz','log-sabaq-juz','log-sabaq-pages','log-sabqi-juz','log-sabqi-pages','log-manzil-count','log-manzil-juz','log-notes','new-parent-name','new-parent-email','cancel-confirm'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      ['new-student-name','new-student-juz','log-sabaq-juz','log-sabaq-pages','log-sabaq-lines','log-sabqi-juz','log-sabqi-pages','log-manzil-count','log-manzil-juz','log-notes','new-parent-name','new-parent-email','cancel-confirm','cp-new-password','cp-new-password2'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
       document.getElementById('new-student-parent').value = '';
       Object.keys(qualityState).forEach(k => qualityState[k] = null);
       manzilFraction = null;
@@ -728,6 +755,7 @@
         student_id: studentId, date,
         sabaq_juz: parseInt(document.getElementById('log-sabaq-juz').value) || null,
         sabaq_pages: parseInt(document.getElementById('log-sabaq-pages').value) || null,
+        sabaq_lines: parseInt(document.getElementById('log-sabaq-lines').value) || null,
         sabaq_quality: sabaqFailed ? null : qualityState.sabaq,
         sabaq_failed: sabaqFailed,
         sabqi_juz: document.getElementById('log-sabqi-juz').value.trim() || null,
@@ -764,9 +792,38 @@
         const { error } = await db.from('organizations').update({ plan: 'cancelled' }).eq('id', currentUser.org_id);
         if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Deactivate Account'; return; }
       }
-      sucEl.textContent = 'Subscription cancelled. Your data is preserved. We\'re sorry to see you go.';
+      sucEl.textContent = 'Subscription cancelled. Your data is preserved. Signing you out…';
       sucEl.style.display = 'block';
       document.getElementById('subscription-status').textContent = '⚠️ Subscription cancelled.';
+      setTimeout(async () => {
+        await db.auth.signOut();
+        window.location.href = base() + 'index.html';
+      }, 2500);
+    }
+
+    function openChangePasswordModal() {
+      document.getElementById('change-password-modal').style.display = 'flex';
+      document.getElementById('cp-new-password').focus();
+    }
+
+    async function changePassword() {
+      const pw = document.getElementById('cp-new-password').value;
+      const pw2 = document.getElementById('cp-new-password2').value;
+      const btn = document.getElementById('cp-btn');
+      const errEl = document.getElementById('cp-error');
+      const sucEl = document.getElementById('cp-success');
+
+      if (pw.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.style.display = 'block'; return; }
+      if (pw !== pw2) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+
+      btn.disabled = true; btn.textContent = 'Saving…';
+      errEl.style.display = 'none'; sucEl.style.display = 'none';
+
+      const { error } = await db.auth.updateUser({ password: pw });
+      btn.disabled = false; btn.textContent = 'Update Password';
+
+      if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
+      else { sucEl.textContent = 'Password updated successfully!'; sucEl.style.display = 'block'; document.getElementById('cp-new-password').value = ''; document.getElementById('cp-new-password2').value = ''; }
     }
 
     async function signOut() { await db.auth.signOut(); window.location.href = base() + 'index.html'; }
