@@ -239,8 +239,7 @@
 
       // Check if first login (must change password)
       if (userData && userData.must_change_password) {
-        document.getElementById('login-panel').style.display = 'none';
-        document.getElementById('change-pw-panel').style.display = 'block';
+        window.location.href = base + '/change-password.html';
         return;
       }
 
