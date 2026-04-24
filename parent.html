@@ -109,6 +109,9 @@
     .pill-warn { background: #fffbeb; color: #b45309; }
     .pill-danger { background: #fef2f2; color: #b91c1c; }
 
+    .log-section-failed { border-color: #fecaca !important; background: #fef2f2 !important; }
+    .pill-danger { background: #fef2f2; color: #b91c1c; }
+
     .empty-state {
       padding: 40px 20px; text-align: center; color: #737773; font-size: 13px;
     }
@@ -301,35 +304,37 @@
 
       el.innerHTML = logs.map(l => {
         const dateStr = new Date(l.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-        const shortDate = new Date(l.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-        const sabaqVal = l.sabaq_pages ? `${l.sabaq_pages} pages` : '—';
-        const sabaqQ = l.sabaq_quality ? qualityPill(l.sabaq_quality) : '';
+        const sabaqFailed = l.sabaq_failed || l.sabaq_quality === 'Failed';
+        const sabaqVal = [l.sabaq_juz ? `Juz ${l.sabaq_juz}` : '', l.sabaq_pages ? `${l.sabaq_pages} pages` : ''].filter(Boolean).join(' · ') || '—';
+        const sabaqQ = sabaqFailed ? `<span class="pill pill-danger">Failed</span>` : qualityPill(l.sabaq_quality);
+
+        const sabqiFailed = l.sabqi_failed || l.sabqi_quality === 'Failed';
         const sabqiVal = [l.sabqi_juz, l.sabqi_pages ? `${l.sabqi_pages}p` : ''].filter(Boolean).join(' · ') || '—';
-        const sabqiQ = l.sabqi_quality ? qualityPill(l.sabqi_quality) : '';
-        const manzilVal = l.manzil_juz || '—';
-        const manzilQ = l.manzil_quality ? qualityPill(l.manzil_quality) : '';
+        const sabqiQ = sabqiFailed ? `<span class="pill pill-danger">Failed</span>` : qualityPill(l.sabqi_quality);
+
+        const manzilFailed = l.manzil_failed || l.manzil_quality === 'Failed';
+        const manzilVal = [l.manzil_fraction, l.manzil_juz, l.manzil_pages ? `${l.manzil_pages}p` : ''].filter(Boolean).join(' · ') || '—';
+        const manzilQ = manzilFailed ? `<span class="pill pill-danger">Failed</span>` : qualityPill(l.manzil_quality);
 
         return `
           <div class="log-block">
             <div class="log-header">
-              <div>
-                <div class="log-date">${dateStr}</div>
-              </div>
+              <div class="log-date">${dateStr}</div>
               ${l.behavior ? `<span>${qualityPill(l.behavior)} behavior</span>` : ''}
             </div>
             <div class="log-grid">
-              <div class="log-section">
+              <div class="log-section ${sabaqFailed ? 'log-section-failed' : ''}">
                 <div class="log-section-title">Sabaq</div>
                 <div class="log-section-val">${sabaqVal}</div>
                 <div class="log-section-sub">${sabaqQ}</div>
               </div>
-              <div class="log-section">
+              <div class="log-section ${sabqiFailed ? 'log-section-failed' : ''}">
                 <div class="log-section-title">Sabqi</div>
                 <div class="log-section-val">${sabqiVal}</div>
                 <div class="log-section-sub">${sabqiQ}</div>
               </div>
-              <div class="log-section">
+              <div class="log-section ${manzilFailed ? 'log-section-failed' : ''}">
                 <div class="log-section-title">Manzil</div>
                 <div class="log-section-val">${manzilVal}</div>
                 <div class="log-section-sub">${manzilQ}</div>
@@ -350,6 +355,7 @@
       if (!q) return '';
       if (q === 'Excellent') return `<span class="pill pill-success">${q}</span>`;
       if (q === 'Good') return `<span class="pill pill-warn">${q}</span>`;
+      if (q === 'Failed') return `<span class="pill pill-danger" style="font-weight:600">Failed</span>`;
       return `<span class="pill pill-danger">${q}</span>`;
     }
 
