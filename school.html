@@ -10,37 +10,22 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; font-family: 'IBM Plex Sans', sans-serif; background: #fafaf9; color: #0f1411; }
 
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 20px; border-bottom: 1px solid #eceae5;
-      background: #fff; font-size: 13px; position: sticky; top: 0; z-index: 10;
-    }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-bottom: 1px solid #eceae5; background: #fff; font-size: 13px; position: sticky; top: 0; z-index: 10; }
     .topbar-left { display: flex; align-items: center; gap: 14px; }
-    .logo-mark {
-      width: 24px; height: 24px; border-radius: 5px;
-      background: #0f1411; color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 700;
-    }
+    .logo-mark { width: 24px; height: 24px; border-radius: 5px; background: #0f1411; color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 700; }
     .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; }
     .breadcrumb .sep { color: #737773; }
     .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .avatar {
-      width: 26px; height: 26px; border-radius: 6px;
-      background: #ecfdf5; color: #047857;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 600;
-    }
-    .signout-btn {
-      font-size: 11px; color: #737773; background: none; border: none;
-      cursor: pointer; font-family: 'IBM Plex Sans', sans-serif;
-    }
+    .avatar { width: 26px; height: 26px; border-radius: 6px; background: #ecfdf5; color: #047857; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+    .signout-btn { font-size: 11px; color: #737773; background: none; border: none; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; }
     .signout-btn:hover { color: #0f1411; }
 
-    .stats-row {
-      display: grid; grid-template-columns: repeat(4, 1fr);
-      border-bottom: 1px solid #eceae5; background: #fff;
-    }
+    .nav-tabs { display: flex; background: #fff; border-bottom: 1px solid #eceae5; padding: 0 20px; }
+    .nav-tab { padding: 10px 16px; font-size: 12px; font-weight: 500; color: #737773; border-bottom: 2px solid transparent; cursor: pointer; background: none; border-top: none; border-left: none; border-right: none; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; }
+    .nav-tab.active { color: #0f1411; border-bottom-color: #0f1411; }
+    .nav-tab:hover { color: #0f1411; }
+
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid #eceae5; background: #fff; }
     .stat-cell { padding: 14px 18px; border-right: 1px solid #eceae5; }
     .stat-cell:last-child { border-right: none; }
     .stat-label { font-size: 10.5px; color: #737773; letter-spacing: 0.3px; text-transform: uppercase; font-weight: 500; }
@@ -48,135 +33,87 @@
     .stat-sub { font-size: 11px; color: #737773; margin-top: 1px; }
 
     .main { padding: 20px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
-    .section-header {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
-    }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
     .section-title { font-size: 13px; font-weight: 600; }
 
-    .btn {
-      padding: 7px 14px; border-radius: 7px; font-size: 12px;
-      font-family: 'IBM Plex Sans', sans-serif; font-weight: 500;
-      cursor: pointer; transition: opacity 0.15s;
-    }
+    .btn { padding: 7px 14px; border-radius: 7px; font-size: 12px; font-family: 'IBM Plex Sans', sans-serif; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
     .btn-primary { background: #0f1411; color: #fff; border: none; }
     .btn-primary:hover { opacity: 0.85; }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-secondary { background: #fff; color: #3a3f3c; border: 1px solid #e3e0da; }
     .btn-secondary:hover { background: #fafaf9; }
     .btn-danger { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .btn-danger:hover { background: #fee2e2; }
 
-    .table-wrap {
-      background: #fff; border-radius: 8px;
-      border: 1px solid #eceae5; overflow: hidden; margin-bottom: 24px;
-    }
-    .table-head {
-      display: grid; grid-template-columns: 2fr 1.5fr 1fr 100px;
-      padding: 9px 16px; background: #fafaf7; border-bottom: 1px solid #eceae5;
-      font-size: 10.5px; color: #737773; letter-spacing: 0.3px; text-transform: uppercase; font-weight: 500;
-    }
-    .table-row {
-      display: grid; grid-template-columns: 2fr 1.5fr 1fr 100px;
-      padding: 12px 16px; align-items: center;
-      border-bottom: 1px solid #eceae5; font-size: 13px; transition: background 0.1s;
-    }
+    .table-wrap { background: #fff; border-radius: 8px; border: 1px solid #eceae5; overflow: hidden; margin-bottom: 24px; }
+    .table-head { display: grid; padding: 9px 16px; background: #fafaf7; border-bottom: 1px solid #eceae5; font-size: 10.5px; color: #737773; letter-spacing: 0.3px; text-transform: uppercase; font-weight: 500; }
+    .table-row { display: grid; padding: 12px 16px; align-items: center; border-bottom: 1px solid #eceae5; font-size: 13px; transition: background 0.1s; }
     .table-row:last-child { border-bottom: none; }
     .table-row:hover { background: #fafaf9; }
-
     .student-name { font-weight: 500; }
     .student-sub { font-size: 11px; color: #737773; margin-top: 1px; font-family: 'IBM Plex Mono', monospace; }
 
-    .pill {
-      display: inline-flex; align-items: center;
-      padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 500;
-    }
+    .pill { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 500; }
     .pill-success { background: #ecfdf5; color: #047857; }
     .pill-warn { background: #fffbeb; color: #b45309; }
     .pill-default { background: #f4f3ef; color: #3a3f3c; }
-    .pill-blue { background: #eff6ff; color: #1d4ed8; }
 
     .action-btns { display: flex; gap: 6px; justify-content: flex-end; }
-    .icon-btn {
-      padding: 5px 10px; border-radius: 6px; font-size: 11.5px;
-      font-family: 'IBM Plex Sans', sans-serif; font-weight: 500;
-      cursor: pointer; border: 1px solid #e3e0da; background: #fff;
-      color: #3a3f3c; transition: all 0.1s;
-    }
+    .icon-btn { padding: 5px 10px; border-radius: 6px; font-size: 11.5px; font-family: 'IBM Plex Sans', sans-serif; font-weight: 500; cursor: pointer; border: 1px solid #e3e0da; background: #fff; color: #3a3f3c; transition: all 0.1s; }
     .icon-btn:hover { background: #f4f3ef; }
+    .icon-btn-danger { border-color: #fecaca !important; color: #b91c1c !important; background: #fef2f2 !important; }
+    .icon-btn-danger:hover { background: #fee2e2 !important; }
 
-    .empty-state {
-      padding: 48px 20px; text-align: center; color: #737773; font-size: 13px;
-    }
+    .empty-state { padding: 48px 20px; text-align: center; color: #737773; font-size: 13px; }
     .empty-state .big { font-size: 32px; margin-bottom: 8px; }
 
-    /* Modal */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 100; padding: 20px;
-    }
-    .modal {
-      background: #fff; border-radius: 10px; padding: 28px;
-      width: 100%; max-width: 480px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-      max-height: 90vh; overflow-y: auto;
-    }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+    .modal { background: #fff; border-radius: 10px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); max-height: 90vh; overflow-y: auto; }
     .modal h2 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
     .modal .sub { font-size: 12px; color: #737773; margin-bottom: 20px; }
 
     .field { margin-bottom: 14px; }
-    .field label {
-      display: block; font-size: 10.5px; color: #737773;
-      letter-spacing: 0.4px; text-transform: uppercase; font-weight: 500; margin-bottom: 6px;
-    }
-    .field input, .field select, .field textarea {
-      width: 100%; padding: 9px 12px; border-radius: 7px;
-      border: 1px solid #e3e0da; background: #fff;
-      font-size: 13px; font-family: 'IBM Plex Sans', sans-serif;
-      outline: none; transition: border-color 0.15s;
-    }
+    .field label { display: block; font-size: 10.5px; color: #737773; letter-spacing: 0.4px; text-transform: uppercase; font-weight: 500; margin-bottom: 6px; }
+    .field input, .field select, .field textarea { width: 100%; padding: 9px 12px; border-radius: 7px; border: 1px solid #e3e0da; background: #fff; font-size: 13px; font-family: 'IBM Plex Sans', sans-serif; outline: none; transition: border-color 0.15s; }
     .field input:focus, .field select:focus, .field textarea:focus { border-color: #047857; }
     .field textarea { resize: vertical; min-height: 70px; }
-
+    .field .hint { font-size: 11px; color: #737773; margin-top: 4px; }
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .section-divider { font-size: 10.5px; color: #737773; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; margin: 20px 0 14px 0; padding-bottom: 8px; border-bottom: 1px solid #eceae5; }
+
     .quality-row { display: flex; gap: 8px; margin-top: 6px; }
-    .quality-btn {
-      flex: 1; padding: 7px 0; border-radius: 6px; font-size: 11.5px;
-      font-family: 'IBM Plex Sans', sans-serif; font-weight: 500;
-      cursor: pointer; border: 1px solid #e3e0da; background: #fff;
-      color: #3a3f3c; transition: all 0.15s; text-align: center;
-    }
+    .quality-btn { flex: 1; padding: 7px 0; border-radius: 6px; font-size: 11.5px; font-family: 'IBM Plex Sans', sans-serif; font-weight: 500; cursor: pointer; border: 1px solid #e3e0da; background: #fff; color: #3a3f3c; transition: all 0.15s; text-align: center; }
     .quality-btn.selected-excellent { background: #ecfdf5; color: #047857; border-color: #6ee7b7; }
     .quality-btn.selected-good { background: #fffbeb; color: #b45309; border-color: #fcd34d; }
     .quality-btn.selected-needs { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
 
-    .section-divider {
-      font-size: 10.5px; color: #737773; text-transform: uppercase; letter-spacing: 0.4px;
-      font-weight: 600; margin: 20px 0 14px 0; padding-bottom: 8px;
-      border-bottom: 1px solid #eceae5;
-    }
-
     .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
 
-    .error-box {
-      background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c;
-      border-radius: 7px; padding: 9px 12px; font-size: 12px; margin-bottom: 14px;
-    }
-    .success-box {
-      background: #ecfdf5; border: 1px solid #6ee7b7; color: #047857;
-      border-radius: 7px; padding: 9px 12px; font-size: 12px; margin-bottom: 14px;
-    }
+    .error-box { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; border-radius: 7px; padding: 9px 12px; font-size: 12px; margin-bottom: 14px; }
+    .success-box { background: #ecfdf5; border: 1px solid #6ee7b7; color: #047857; border-radius: 7px; padding: 9px 12px; font-size: 12px; margin-bottom: 14px; }
+    .info-box { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; border-radius: 7px; padding: 9px 12px; font-size: 12px; margin-bottom: 14px; }
+    .warn-box { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; border-radius: 7px; padding: 9px 12px; font-size: 12px; margin-bottom: 14px; }
 
     .loading { padding: 60px; text-align: center; color: #737773; font-size: 13px; }
 
-    /* Logs table wider */
-    .logs-head { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr !important; }
-    .logs-row { grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1fr !important; }
+    .password-reveal { background: #f4f3ef; border: 1px solid #e3e0da; border-radius: 7px; padding: 14px 16px; margin-bottom: 14px; }
+    .password-reveal .pw-label { font-size: 10.5px; color: #737773; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 500; margin-bottom: 6px; }
+    .password-reveal .pw { font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 600; color: #0f1411; letter-spacing: 2px; word-break: break-all; }
+    .copy-btn { margin-top: 8px; font-size: 11px; color: #047857; background: none; border: none; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; padding: 0; }
+
+    .settings-section { background: #fff; border: 1px solid #eceae5; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+    .settings-section h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .settings-section .desc { font-size: 12px; color: #737773; margin-bottom: 16px; }
+    .danger-zone { border-color: #fecaca; }
+    .danger-zone h3 { color: #b91c1c; }
   </style>
 </head>
 <body>
 
-  <!-- Topbar -->
   <div class="topbar">
     <div class="topbar-left">
       <div class="logo-mark">Q</div>
@@ -195,72 +132,86 @@
     </div>
   </div>
 
-  <!-- Stats -->
-  <div class="stats-row">
-    <div class="stat-cell">
-      <div class="stat-label">Total Students</div>
-      <div class="stat-value" id="stat-students">—</div>
-      <div class="stat-sub">in your class</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-label">Logs Today</div>
-      <div class="stat-value" id="stat-logs">—</div>
-      <div class="stat-sub" id="stat-date">—</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-label">Avg Sabaq Pages</div>
-      <div class="stat-value" id="stat-avg">—</div>
-      <div class="stat-sub">this week</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-label">Sessions This Week</div>
-      <div class="stat-value" id="stat-week">—</div>
-      <div class="stat-sub">logged sessions</div>
-    </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" id="navbtn-students" onclick="switchTab('students',this)">Students</button>
+    <button class="nav-tab" id="navbtn-parents" onclick="switchTab('parents',this)">Parents</button>
+    <button class="nav-tab" id="navbtn-logs" onclick="switchTab('logs',this)">Progress Logs</button>
+    <button class="nav-tab" id="navbtn-settings" onclick="switchTab('settings',this)">Settings</button>
   </div>
 
-  <!-- Main -->
+  <div class="stats-row">
+    <div class="stat-cell"><div class="stat-label">Total Students</div><div class="stat-value" id="stat-students">—</div><div class="stat-sub">in your class</div></div>
+    <div class="stat-cell"><div class="stat-label">Logs Today</div><div class="stat-value" id="stat-logs">—</div><div class="stat-sub" id="stat-date">—</div></div>
+    <div class="stat-cell"><div class="stat-label">Avg Sabaq Pages</div><div class="stat-value" id="stat-avg">—</div><div class="stat-sub">this week</div></div>
+    <div class="stat-cell"><div class="stat-label">Sessions This Week</div><div class="stat-value" id="stat-week">—</div><div class="stat-sub">logged sessions</div></div>
+  </div>
+
   <div class="main">
 
-    <!-- Students -->
-    <div class="section-header">
-      <div class="section-title">Students</div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-secondary" onclick="openInviteModal()">+ Invite Parent</button>
-        <button class="btn btn-secondary" onclick="openLogModal()">+ Log Progress</button>
-        <button class="btn btn-primary" onclick="openAddStudentModal()">+ Add Student</button>
+    <!-- STUDENTS -->
+    <div id="tab-students" class="tab-content active">
+      <div class="section-header">
+        <div class="section-title">Students</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" onclick="openLogModal()">+ Log Progress</button>
+          <button class="btn btn-primary" onclick="openAddStudentModal()">+ Add Student</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head" style="grid-template-columns:2fr 1fr 1fr 1fr 120px">
+          <div>Student</div><div>Juz Known</div><div>Linked Parent</div><div>Last Log</div><div style="text-align:right">Actions</div>
+        </div>
+        <div id="students-list"><div class="loading">Loading students…</div></div>
       </div>
     </div>
 
-    <div class="table-wrap">
-      <div class="table-head">
-        <div>Student</div>
-        <div>Juz Known</div>
-        <div>Last Log</div>
-        <div style="text-align:right">Actions</div>
+    <!-- PARENTS -->
+    <div id="tab-parents" class="tab-content">
+      <div class="section-header">
+        <div class="section-title">Parents</div>
+        <button class="btn btn-primary" onclick="openAddParentModal()">+ Add Parent</button>
       </div>
-      <div id="students-list">
-        <div class="loading">Loading students…</div>
+      <div class="table-wrap">
+        <div class="table-head" style="grid-template-columns:2fr 2fr 1.5fr 80px">
+          <div>Name</div><div>Email</div><div>Linked Students</div><div style="text-align:right">Actions</div>
+        </div>
+        <div id="parents-list"><div class="loading">Loading parents…</div></div>
       </div>
     </div>
 
-    <!-- Recent logs -->
-    <div class="section-header">
-      <div class="section-title">Recent Progress Logs</div>
-    </div>
-    <div class="table-wrap" style="overflow-x:auto">
-      <div class="table-head logs-head" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1.5fr;min-width:700px">
-        <div>Student</div>
-        <div>Date</div>
-        <div>Sabaq</div>
-        <div>Sabqi</div>
-        <div>Manzil</div>
-        <div>Behavior / Notes</div>
+    <!-- LOGS -->
+    <div id="tab-logs" class="tab-content">
+      <div class="section-header">
+        <div class="section-title">Progress Logs</div>
+        <button class="btn btn-primary" onclick="openLogModal()">+ Log Progress</button>
       </div>
-      <div id="logs-list">
-        <div class="loading">Loading logs…</div>
+      <div class="table-wrap" style="overflow-x:auto">
+        <div class="table-head" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1.5fr;min-width:700px">
+          <div>Student</div><div>Date</div><div>Sabaq</div><div>Sabqi</div><div>Manzil</div><div>Behavior / Notes</div>
+        </div>
+        <div id="logs-list"><div class="loading">Loading logs…</div></div>
       </div>
     </div>
+
+    <!-- SETTINGS -->
+    <div id="tab-settings" class="tab-content">
+      <div class="settings-section">
+        <h3>Account</h3>
+        <p class="desc">Signed in as <span id="settings-email" style="font-weight:500;color:#0f1411"></span></p>
+        <div id="settings-org-name" style="font-size:13px;color:#737773"></div>
+      </div>
+      <div class="settings-section">
+        <h3>Subscription</h3>
+        <p class="desc">Manage your Quran Journey plan.</p>
+        <div id="subscription-status" style="margin-bottom:14px;font-size:13px;color:#3a3f3c"></div>
+        <button class="btn btn-danger" onclick="openCancelModal()">Cancel Subscription</button>
+      </div>
+      <div class="settings-section danger-zone">
+        <h3>Data & Privacy</h3>
+        <p class="desc">If you cancel, your account is deactivated — not deleted. All student and progress data is preserved. To reactivate, contact support.</p>
+      </div>
+    </div>
+
   </div>
 
   <!-- ADD STUDENT MODAL -->
@@ -274,26 +225,13 @@
         <input type="text" id="new-student-name" placeholder="e.g. Yusuf Ahmed" />
       </div>
       <div class="field">
-        <label>Juz Already Known</label>
-        <select id="new-student-juz">
-          <option value="">Select current level…</option>
-          <option value="0">None yet (starting out)</option>
-          <option value="1">1 Juz</option>
-          <option value="2">2 Juz</option>
-          <option value="3">3 Juz</option>
-          <option value="5">5 Juz</option>
-          <option value="10">10 Juz</option>
-          <option value="15">15 Juz (half Quran)</option>
-          <option value="20">20 Juz</option>
-          <option value="25">25 Juz</option>
-          <option value="30">30 Juz (full Hifz)</option>
-        </select>
+        <label>How many Juz do they currently know?</label>
+        <input type="number" id="new-student-juz" min="0" max="30" placeholder="e.g. 3" />
+        <div class="hint">Enter 0 if they are just starting out. This is the baseline — progress will be tracked on top of this.</div>
       </div>
       <div class="field">
         <label>Linked Parent Account</label>
-        <select id="new-student-parent">
-          <option value="">Select parent…</option>
-        </select>
+        <select id="new-student-parent"><option value="">Select parent…</option></select>
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
@@ -302,24 +240,41 @@
     </div>
   </div>
 
-  <!-- INVITE PARENT MODAL -->
-  <div class="modal-overlay" id="invite-modal" style="display:none">
+  <!-- ADD PARENT MODAL -->
+  <div class="modal-overlay" id="add-parent-modal" style="display:none">
     <div class="modal">
-      <h2>Invite Parent</h2>
-      <p class="sub">Send a magic link so a parent can set their own password and log in.</p>
-      <div id="invite-error" class="error-box" style="display:none"></div>
-      <div id="invite-success" class="success-box" style="display:none"></div>
-      <div class="field">
-        <label>Parent Name</label>
-        <input type="text" id="invite-name" placeholder="e.g. Ahmed Al-Rashid" />
+      <h2>Add Parent</h2>
+      <p class="sub">Create a login for a parent. Share the temporary password with them directly — they'll be prompted to change it when they first sign in.</p>
+      <div id="add-parent-error" class="error-box" style="display:none"></div>
+      <div id="add-parent-result" style="display:none">
+        <div class="success-box">✓ Parent account created!</div>
+        <div class="info-box">Share these credentials with the parent. The password will not be shown again.</div>
+        <div class="password-reveal">
+          <div class="pw-label">Email</div>
+          <div class="pw" id="result-email" style="font-size:14px;letter-spacing:0"></div>
+        </div>
+        <div class="password-reveal">
+          <div class="pw-label">Temporary Password</div>
+          <div class="pw" id="result-password"></div>
+          <button class="copy-btn" onclick="copyPassword()">Copy password</button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-primary" onclick="closeModals()">Done</button>
+        </div>
       </div>
-      <div class="field">
-        <label>Parent Email</label>
-        <input type="email" id="invite-email" placeholder="parent@gmail.com" />
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" onclick="closeModals()">Close</button>
-        <button class="btn btn-primary" id="invite-btn" onclick="inviteParent()">Send Invite</button>
+      <div id="add-parent-form">
+        <div class="field">
+          <label>Parent Name</label>
+          <input type="text" id="new-parent-name" placeholder="e.g. Ahmed Al-Rashid" />
+        </div>
+        <div class="field">
+          <label>Parent Email</label>
+          <input type="email" id="new-parent-email" placeholder="parent@gmail.com" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
+          <button class="btn btn-primary" id="add-parent-btn" onclick="addParent()">Create Account</button>
+        </div>
       </div>
     </div>
   </div>
@@ -330,28 +285,18 @@
       <h2>Log Progress</h2>
       <p class="sub">Record today's session for a student.</p>
       <div id="log-error" class="error-box" style="display:none"></div>
-
       <div class="field">
         <label>Student</label>
-        <select id="log-student-select">
-          <option value="">Select student…</option>
-        </select>
+        <select id="log-student-select"><option value="">Select student…</option></select>
       </div>
-
       <div class="field">
         <label>Date</label>
         <input type="date" id="log-date" />
       </div>
-
-      <!-- SABAQ -->
       <div class="section-divider">Sabaq (New Lesson)</div>
       <div class="field-row">
-        <div class="field">
-          <label>Pages</label>
-          <input type="number" id="log-sabaq-pages" min="0" placeholder="e.g. 2" />
-        </div>
-        <div class="field">
-          <label>Quality</label>
+        <div class="field"><label>Pages</label><input type="number" id="log-sabaq-pages" min="0" placeholder="e.g. 2" /></div>
+        <div class="field"><label>Quality</label>
           <div class="quality-row">
             <div class="quality-btn" onclick="setQuality('sabaq','Excellent')" id="sq-excellent">Excellent</div>
             <div class="quality-btn" onclick="setQuality('sabaq','Good')" id="sq-good">Good</div>
@@ -359,61 +304,58 @@
           </div>
         </div>
       </div>
-
-      <!-- SABQI -->
       <div class="section-divider">Sabqi (Recent Revision)</div>
       <div class="field-row">
-        <div class="field">
-          <label>Juz / Pages</label>
-          <input type="text" id="log-sabqi-juz" placeholder="e.g. Juz 3, p.4–6" />
-        </div>
-        <div class="field">
-          <label>Pages</label>
-          <input type="number" id="log-sabqi-pages" min="0" placeholder="e.g. 4" />
-        </div>
+        <div class="field"><label>Juz / Pages</label><input type="text" id="log-sabqi-juz" placeholder="e.g. Juz 3, p.4–6" /></div>
+        <div class="field"><label>Pages</label><input type="number" id="log-sabqi-pages" min="0" placeholder="e.g. 4" /></div>
       </div>
-      <div class="field">
-        <label>Quality</label>
+      <div class="field"><label>Quality</label>
         <div class="quality-row">
           <div class="quality-btn" onclick="setQuality('sabqi','Excellent')" id="sqi-excellent">Excellent</div>
           <div class="quality-btn" onclick="setQuality('sabqi','Good')" id="sqi-good">Good</div>
           <div class="quality-btn" onclick="setQuality('sabqi','Needs Work')" id="sqi-needs">Needs Work</div>
         </div>
       </div>
-
-      <!-- MANZIL -->
       <div class="section-divider">Manzil (Old Revision)</div>
-      <div class="field">
-        <label>Which Juz / How Many</label>
-        <input type="text" id="log-manzil-juz" placeholder="e.g. Juz 1–3" />
-      </div>
-      <div class="field">
-        <label>Quality</label>
+      <div class="field"><label>Which Juz / How Many</label><input type="text" id="log-manzil-juz" placeholder="e.g. Juz 1–3" /></div>
+      <div class="field"><label>Quality</label>
         <div class="quality-row">
           <div class="quality-btn" onclick="setQuality('manzil','Excellent')" id="mz-excellent">Excellent</div>
           <div class="quality-btn" onclick="setQuality('manzil','Good')" id="mz-good">Good</div>
           <div class="quality-btn" onclick="setQuality('manzil','Needs Work')" id="mz-needs">Needs Work</div>
         </div>
       </div>
-
-      <!-- BEHAVIOR + NOTES -->
       <div class="section-divider">Behavior & Notes</div>
-      <div class="field">
-        <label>Behavior</label>
+      <div class="field"><label>Behavior</label>
         <div class="quality-row">
           <div class="quality-btn" onclick="setQuality('behavior','Excellent')" id="bh-excellent">Excellent</div>
           <div class="quality-btn" onclick="setQuality('behavior','Good')" id="bh-good">Good</div>
           <div class="quality-btn" onclick="setQuality('behavior','Needs Work')" id="bh-needs">Needs Work</div>
         </div>
       </div>
-      <div class="field">
-        <label>Teacher's Notes (optional)</label>
-        <textarea id="log-notes" placeholder="Any observations, focus areas, or comments for the parent…"></textarea>
-      </div>
-
+      <div class="field"><label>Teacher's Notes (optional)</label><textarea id="log-notes" placeholder="Any observations, focus areas, or comments for the parent…"></textarea></div>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
         <button class="btn btn-primary" onclick="submitLog()">Save Log</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CANCEL SUBSCRIPTION MODAL -->
+  <div class="modal-overlay" id="cancel-modal" style="display:none">
+    <div class="modal">
+      <h2>Cancel Subscription</h2>
+      <p class="sub">Your account will be deactivated — not deleted. All data is preserved if you ever return.</p>
+      <div class="warn-box">⚠️ Students, parents, and progress logs will all be saved. You can reactivate by contacting support.</div>
+      <div id="cancel-error" class="error-box" style="display:none"></div>
+      <div id="cancel-success" class="success-box" style="display:none"></div>
+      <div class="field">
+        <label>Type CANCEL to confirm</label>
+        <input type="text" id="cancel-confirm" placeholder="CANCEL" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModals()">Go Back</button>
+        <button class="btn btn-danger" id="cancel-btn" onclick="cancelSubscription()">Deactivate Account</button>
       </div>
     </div>
   </div>
@@ -424,44 +366,56 @@
     const SUPABASE_KEY = 'sb_publishable_DErpFcOi5m4LMgkVYFP5Kg_6fhVxHqG';
     const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    const PAGES_PER_JUZ = 20;
+
     let currentUser = null;
     let students = [];
     let logs = [];
     let parents = [];
+    let generatedPassword = '';
 
-    // Quality selections
     const qualityState = { sabaq: null, sabqi: null, manzil: null, behavior: null };
-
     const base = () => window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
 
     function setQuality(type, val) {
       qualityState[type] = val;
       const prefix = { sabaq: 'sq', sabqi: 'sqi', manzil: 'mz', behavior: 'bh' }[type];
-      ['excellent','good','needs'].forEach(k => {
-        const el = document.getElementById(`${prefix}-${k}`);
-        el.className = 'quality-btn';
-      });
+      ['excellent','good','needs'].forEach(k => document.getElementById(`${prefix}-${k}`).className = 'quality-btn');
       const keyMap = { 'Excellent': 'excellent', 'Good': 'good', 'Needs Work': 'needs' };
       const el = document.getElementById(`${prefix}-${keyMap[val]}`);
       if (el) el.classList.add(`selected-${keyMap[val]}`);
+    }
+
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
+      btn.classList.add('active');
     }
 
     async function init() {
       const { data: { session } } = await db.auth.getSession();
       if (!session) { window.location.href = base() + 'index.html'; return; }
 
-      const { data: userData } = await db
-        .from('users').select('*').eq('email', session.user.email).single();
-
-      if (!userData || userData.role !== 'teacher') {
-        window.location.href = base() + 'index.html'; return;
-      }
+      const { data: userData } = await db.from('users').select('*').eq('email', session.user.email).single();
+      if (!userData || userData.role !== 'teacher') { window.location.href = base() + 'index.html'; return; }
 
       currentUser = userData;
       const initials = userData.name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
       document.getElementById('school-avatar').textContent = initials;
       document.getElementById('school-name-display').textContent = userData.name;
       document.getElementById('school-name-crumb').textContent = userData.name;
+      document.getElementById('settings-email').textContent = session.user.email;
+
+      if (userData.org_id) {
+        const { data: org } = await db.from('organizations').select('*').eq('id', userData.org_id).single();
+        if (org) {
+          document.getElementById('settings-org-name').textContent = org.name;
+          document.getElementById('subscription-status').textContent =
+            org.plan === 'cancelled' ? '⚠️ Cancelled — account deactivated at end of billing period.'
+            : `Active — ${org.plan === 'trial' ? 'Free Trial' : org.plan.charAt(0).toUpperCase() + org.plan.slice(1)} plan`;
+        }
+      }
 
       document.getElementById('log-date').value = new Date().toISOString().split('T')[0];
       document.getElementById('stat-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
@@ -472,24 +426,39 @@
     }
 
     async function loadParents() {
-      // Load parents from same org if org_id exists, otherwise all parents
       let query = db.from('users').select('*').eq('role', 'parent').order('name');
-      if (currentUser.org_id) {
-        query = db.from('users').select('*').eq('role', 'parent').eq('org_id', currentUser.org_id).order('name');
-      }
+      if (currentUser.org_id) query = db.from('users').select('*').eq('role', 'parent').eq('org_id', currentUser.org_id).order('name');
       const { data } = await query;
       parents = data || [];
-
+      renderParents();
       const sel = document.getElementById('new-student-parent');
       sel.innerHTML = '<option value="">Select parent…</option>' +
         parents.map(p => `<option value="${p.email}">${p.name} (${p.email})</option>`).join('');
     }
 
+    function renderParents() {
+      const el = document.getElementById('parents-list');
+      if (parents.length === 0) {
+        el.innerHTML = `<div class="empty-state"><div class="big">👤</div>No parents yet. Add a parent to get started.</div>`;
+        return;
+      }
+      el.innerHTML = parents.map(p => {
+        const linked = students.filter(s => s.parent_email === p.email).map(s => s.name).join(', ') || '<span style="color:#737773">None linked</span>';
+        return `
+          <div class="table-row" style="grid-template-columns:2fr 2fr 1.5fr 80px">
+            <div class="student-name">${p.name}</div>
+            <div style="font-size:12px;color:#3a3f3c;font-family:'IBM Plex Mono',monospace">${p.email}</div>
+            <div style="font-size:12px">${linked}</div>
+            <div class="action-btns">
+              <button class="icon-btn icon-btn-danger" onclick="removeParent('${p.email}','${p.name.replace(/'/g,"\\'")}')">Remove</button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
     async function loadStudents() {
       let query = db.from('students').select('*').order('name');
-      if (currentUser.org_id) {
-        query = db.from('students').select('*').eq('org_id', currentUser.org_id).order('name');
-      }
+      if (currentUser.org_id) query = db.from('students').select('*').eq('org_id', currentUser.org_id).order('name');
       const { data } = await query;
       students = data || [];
       renderStudents();
@@ -498,18 +467,20 @@
     }
 
     async function loadLogs() {
-      const studentIds = students.map(s => s.id);
-      if (studentIds.length === 0) { logs = []; renderLogs(); updateStats(); return; }
-
-      const { data } = await db
-        .from('progress_logs')
-        .select('*, students(name)')
-        .in('student_id', studentIds)
-        .order('date', { ascending: false })
-        .limit(30);
+      const ids = students.map(s => s.id);
+      if (ids.length === 0) { logs = []; renderLogs(); updateStats(); return; }
+      const { data } = await db.from('progress_logs').select('*, students(name)').in('student_id', ids).order('date', { ascending: false }).limit(50);
       logs = data || [];
+      renderStudents(); // re-render to show updated juz
       renderLogs();
       updateStats();
+    }
+
+    function calcCurrentJuz(studentId) {
+      const student = students.find(s => s.id === studentId);
+      const base_juz = student?.juz_target ?? 0;
+      const totalSabaqPages = logs.filter(l => l.student_id === studentId).reduce((sum, l) => sum + (l.sabaq_pages || 0), 0);
+      return Math.min(base_juz + Math.floor(totalSabaqPages / PAGES_PER_JUZ), 30);
     }
 
     function renderStudents() {
@@ -521,73 +492,61 @@
       el.innerHTML = students.map(s => {
         const lastLog = logs.find(l => l.student_id === s.id);
         const lastDate = lastLog ? new Date(lastLog.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—';
-        const juzLabel = s.juz_target != null ? `${s.juz_target} Juz` : '—';
-
+        const currentJuz = calcCurrentJuz(s.id);
+        const linkedParent = parents.find(p => p.email === s.parent_email);
+        const parentLabel = linkedParent ? linkedParent.name : '<span style="color:#737773;font-size:11px">No parent</span>';
         return `
-          <div class="table-row">
+          <div class="table-row" style="grid-template-columns:2fr 1fr 1fr 1fr 120px">
             <div>
               <div class="student-name">${s.name}</div>
-              <div class="student-sub">${s.parent_email || 'No parent linked'}</div>
+              <div class="student-sub">started with ${s.juz_target ?? 0} juz</div>
             </div>
-            <div><span class="pill pill-default">${juzLabel}</span></div>
+            <div><span class="pill pill-default">${currentJuz} Juz</span></div>
+            <div style="font-size:12px">${parentLabel}</div>
             <div style="font-size:12px;color:#737773;font-family:'IBM Plex Mono',monospace">${lastDate}</div>
             <div class="action-btns">
               <button class="icon-btn" onclick="quickLog(${s.id})">Log</button>
-              <button class="icon-btn btn-danger" onclick="deleteStudent(${s.id}, '${s.name.replace(/'/g, "\\'")}')">✕</button>
+              <button class="icon-btn icon-btn-danger" onclick="deleteStudent(${s.id},'${s.name.replace(/'/g,"\\'")}')">✕</button>
             </div>
-          </div>
-        `;
+          </div>`;
       }).join('');
     }
 
     function renderLogs() {
       const el = document.getElementById('logs-list');
       if (logs.length === 0) {
-        el.innerHTML = `<div class="empty-state"><div class="big">📝</div>No logs yet. Log a student's progress to get started.</div>`;
+        el.innerHTML = `<div class="empty-state"><div class="big">📝</div>No logs yet.</div>`;
         return;
       }
       el.innerHTML = logs.map(l => {
         const dateStr = new Date(l.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const sabaqStr = l.sabaq_pages ? `${l.sabaq_pages}p` : '—';
-        const sabaqQ = l.sabaq_quality ? qualityPill(l.sabaq_quality) : '';
-        const sabqiStr = l.sabqi_pages ? `${l.sabqi_pages}p` : (l.sabqi_juz || '—');
-        const manzilStr = l.manzil_juz || '—';
         return `
-          <div class="table-row logs-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1.5fr;min-width:700px">
+          <div class="table-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1.5fr;min-width:700px">
             <div class="student-name">${l.students?.name || '—'}</div>
             <div style="font-size:11px;color:#737773;font-family:'IBM Plex Mono',monospace">${dateStr}</div>
-            <div>${sabaqStr} ${sabaqQ}</div>
-            <div style="font-size:12px">${sabqiStr} ${l.sabqi_quality ? qualityPill(l.sabqi_quality) : ''}</div>
-            <div style="font-size:12px">${manzilStr} ${l.manzil_quality ? qualityPill(l.manzil_quality) : ''}</div>
-            <div style="font-size:12px;color:#3a3f3c">
-              ${l.behavior ? qualityPill(l.behavior) : ''}
-              ${l.teacher_notes ? `<span style="color:#737773;margin-left:4px">${l.teacher_notes}</span>` : ''}
-            </div>
-          </div>
-        `;
+            <div>${l.sabaq_pages ? l.sabaq_pages+'p' : '—'} ${qualityPill(l.sabaq_quality)}</div>
+            <div style="font-size:12px">${l.sabqi_pages ? l.sabqi_pages+'p' : (l.sabqi_juz||'—')} ${qualityPill(l.sabqi_quality)}</div>
+            <div style="font-size:12px">${l.manzil_juz||'—'} ${qualityPill(l.manzil_quality)}</div>
+            <div style="font-size:12px">${qualityPill(l.behavior)} <span style="color:#737773">${l.teacher_notes||''}</span></div>
+          </div>`;
       }).join('');
     }
 
     function qualityPill(q) {
       if (!q) return '';
-      const cls = q === 'Excellent' ? 'pill-success' : q === 'Good' ? 'pill-warn' : 'pill pill-danger';
-      const map = { Excellent: 'pill-success', Good: 'pill-warn', 'Needs Work': '' };
-      const style = q === 'Needs Work' ? 'background:#fef2f2;color:#b91c1c' : '';
-      return `<span class="pill ${map[q]}" style="${style}">${q}</span>`;
+      if (q === 'Excellent') return `<span class="pill pill-success">${q}</span>`;
+      if (q === 'Good') return `<span class="pill pill-warn">${q}</span>`;
+      return `<span class="pill" style="background:#fef2f2;color:#b91c1c">${q}</span>`;
     }
 
     function updateStats() {
       document.getElementById('stat-students').textContent = students.length;
-
       const today = new Date().toISOString().split('T')[0];
       document.getElementById('stat-logs').textContent = logs.filter(l => l.date === today).length;
-
-      // Avg sabaq pages this week
       const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
       const weekLogs = logs.filter(l => new Date(l.date) >= weekAgo);
       const weekPages = weekLogs.reduce((s, l) => s + (l.sabaq_pages || 0), 0);
-      const avg = students.length > 0 ? (weekPages / students.length).toFixed(1) : '0';
-      document.getElementById('stat-avg').textContent = avg;
+      document.getElementById('stat-avg').textContent = students.length > 0 ? (weekPages / students.length).toFixed(1) : '0';
       document.getElementById('stat-week').textContent = weekLogs.length;
     }
 
@@ -597,160 +556,141 @@
         students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
     }
 
-    // Modals
-    function openAddStudentModal() {
-      document.getElementById('add-student-modal').style.display = 'flex';
-      document.getElementById('new-student-name').focus();
+    function openAddStudentModal() { document.getElementById('add-student-modal').style.display = 'flex'; document.getElementById('new-student-name').focus(); }
+    function openAddParentModal() {
+      document.getElementById('add-parent-modal').style.display = 'flex';
+      document.getElementById('add-parent-form').style.display = 'block';
+      document.getElementById('add-parent-result').style.display = 'none';
+      document.getElementById('new-parent-name').focus();
     }
-
-    function openLogModal() {
-      document.getElementById('log-modal').style.display = 'flex';
-    }
-
-    function openInviteModal() {
-      document.getElementById('invite-modal').style.display = 'flex';
-      document.getElementById('invite-name').focus();
-    }
-
-    function quickLog(studentId) {
-      openLogModal();
-      setTimeout(() => { document.getElementById('log-student-select').value = studentId; }, 50);
-    }
+    function openLogModal() { document.getElementById('log-modal').style.display = 'flex'; }
+    function openCancelModal() { document.getElementById('cancel-modal').style.display = 'flex'; }
+    function quickLog(id) { openLogModal(); setTimeout(() => { document.getElementById('log-student-select').value = id; }, 50); }
 
     function closeModals() {
-      ['add-student-modal','log-modal','invite-modal'].forEach(id => {
-        document.getElementById(id).style.display = 'none';
-      });
-      ['add-student-error','log-error','invite-error','invite-success'].forEach(id => {
-        document.getElementById(id).style.display = 'none';
-      });
-      // Reset form fields
-      ['new-student-name','log-sabaq-pages','log-sabqi-juz','log-sabqi-pages','log-manzil-juz','log-notes','invite-name','invite-email'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-      });
-      ['new-student-juz','new-student-parent'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-      });
-      // Reset quality buttons
+      document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.error-box').forEach(el => el.style.display = 'none');
+      ['new-student-name','new-student-juz','log-sabaq-pages','log-sabqi-juz','log-sabqi-pages','log-manzil-juz','log-notes','new-parent-name','new-parent-email','cancel-confirm'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      document.getElementById('new-student-parent').value = '';
       Object.keys(qualityState).forEach(k => qualityState[k] = null);
       document.querySelectorAll('.quality-btn').forEach(b => b.className = 'quality-btn');
+      generatedPassword = '';
+    }
+
+    function generateTempPassword() {
+      const chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+      return Array.from({ length: 10 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    }
+
+    function copyPassword() {
+      navigator.clipboard.writeText(generatedPassword).then(() => {
+        document.querySelector('.copy-btn').textContent = '✓ Copied!';
+        setTimeout(() => { const b = document.querySelector('.copy-btn'); if (b) b.textContent = 'Copy password'; }, 2000);
+      });
+    }
+
+    async function addParent() {
+      const name = document.getElementById('new-parent-name').value.trim();
+      const email = document.getElementById('new-parent-email').value.trim();
+      const errEl = document.getElementById('add-parent-error');
+      const btn = document.getElementById('add-parent-btn');
+
+      if (!name) { errEl.textContent = 'Please enter the parent\'s name.'; errEl.style.display = 'block'; return; }
+      if (!email || !email.includes('@')) { errEl.textContent = 'Please enter a valid email.'; errEl.style.display = 'block'; return; }
+
+      btn.disabled = true; btn.textContent = 'Creating…';
+      errEl.style.display = 'none';
+      generatedPassword = generateTempPassword();
+
+      const { error: signUpError } = await db.auth.signUp({ email, password: generatedPassword });
+
+      if (signUpError && !signUpError.message.toLowerCase().includes('already registered')) {
+        errEl.textContent = signUpError.message; errEl.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Create Account'; return;
+      }
+
+      const userPayload = { email, name, role: 'parent', must_change_password: true };
+      if (currentUser.org_id) userPayload.org_id = currentUser.org_id;
+
+      const { error: dbError } = await db.from('users').upsert(userPayload, { onConflict: 'email' });
+      if (dbError) { errEl.textContent = dbError.message; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Create Account'; return; }
+
+      document.getElementById('add-parent-form').style.display = 'none';
+      document.getElementById('add-parent-result').style.display = 'block';
+      document.getElementById('result-email').textContent = email;
+      document.getElementById('result-password').textContent = generatedPassword;
+
+      await loadParents();
+      btn.disabled = false; btn.textContent = 'Create Account';
+    }
+
+    async function removeParent(email, name) {
+      if (!confirm(`Remove ${name}? Their linked students will be unlinked but student records stay.`)) return;
+      await db.from('students').update({ parent_email: null }).eq('parent_email', email);
+      await db.from('users').delete().eq('email', email);
+      await loadParents();
+      await loadStudents();
     }
 
     async function addStudent() {
       const name = document.getElementById('new-student-name').value.trim();
-      const juz = document.getElementById('new-student-juz').value;
+      const juzVal = document.getElementById('new-student-juz').value;
       const parentEmail = document.getElementById('new-student-parent').value;
       const errEl = document.getElementById('add-student-error');
-
       if (!name) { errEl.textContent = 'Please enter a student name.'; errEl.style.display = 'block'; return; }
-
-      const payload = {
-        name,
-        juz_target: juz !== '' ? parseInt(juz) : null,
-        parent_email: parentEmail || null,
-      };
+      const payload = { name, juz_target: juzVal !== '' ? parseInt(juzVal) : 0, parent_email: parentEmail || null };
       if (currentUser.org_id) payload.org_id = currentUser.org_id;
-
       const { error } = await db.from('students').insert(payload);
       if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
-
-      closeModals();
-      await loadStudents();
-      await loadLogs();
-    }
-
-    async function inviteParent() {
-      const name = document.getElementById('invite-name').value.trim();
-      const email = document.getElementById('invite-email').value.trim();
-      const errEl = document.getElementById('invite-error');
-      const sucEl = document.getElementById('invite-success');
-      const btn = document.getElementById('invite-btn');
-
-      if (!name) { errEl.textContent = 'Please enter the parent\'s name.'; errEl.style.display = 'block'; return; }
-      if (!email) { errEl.textContent = 'Please enter the parent\'s email.'; errEl.style.display = 'block'; return; }
-
-      btn.disabled = true;
-      btn.textContent = 'Sending…';
-      errEl.style.display = 'none';
-
-      // Step 1: Create user record in users table
-      const userPayload = { email, name, role: 'parent' };
-      if (currentUser.org_id) userPayload.org_id = currentUser.org_id;
-
-      // Check if user already exists
-      const { data: existing } = await db.from('users').select('email').eq('email', email).single();
-
-      if (!existing) {
-        await db.from('users').insert(userPayload);
-      }
-
-      // Step 2: Send magic link via Supabase Auth
-      const base2 = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
-      const { error } = await db.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: base2 + 'parent.html', shouldCreateUser: true }
-      });
-
-      btn.disabled = false;
-      btn.textContent = 'Send Invite';
-
-      if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
-      else {
-        sucEl.textContent = `Invite sent to ${email}! They'll receive a magic login link.`;
-        sucEl.style.display = 'block';
-        await loadParents();
-      }
+      closeModals(); await loadStudents(); await loadLogs();
     }
 
     async function submitLog() {
       const studentId = parseInt(document.getElementById('log-student-select').value);
       const date = document.getElementById('log-date').value;
       const errEl = document.getElementById('log-error');
-
       if (!studentId) { errEl.textContent = 'Please select a student.'; errEl.style.display = 'block'; return; }
       if (!date) { errEl.textContent = 'Please select a date.'; errEl.style.display = 'block'; return; }
-
-      const sabaqPages = parseInt(document.getElementById('log-sabaq-pages').value) || null;
-      const sabqiJuz = document.getElementById('log-sabqi-juz').value.trim() || null;
-      const sabqiPages = parseInt(document.getElementById('log-sabqi-pages').value) || null;
-      const manzilJuz = document.getElementById('log-manzil-juz').value.trim() || null;
-      const notes = document.getElementById('log-notes').value.trim() || null;
-
       const { error } = await db.from('progress_logs').insert({
-        student_id: studentId,
-        date,
-        sabaq_pages: sabaqPages,
+        student_id: studentId, date,
+        sabaq_pages: parseInt(document.getElementById('log-sabaq-pages').value) || null,
         sabaq_quality: qualityState.sabaq,
-        sabqi_juz: sabqiJuz,
-        sabqi_pages: sabqiPages,
+        sabqi_juz: document.getElementById('log-sabqi-juz').value.trim() || null,
+        sabqi_pages: parseInt(document.getElementById('log-sabqi-pages').value) || null,
         sabqi_quality: qualityState.sabqi,
-        manzil_juz: manzilJuz,
+        manzil_juz: document.getElementById('log-manzil-juz').value.trim() || null,
         manzil_quality: qualityState.manzil,
         behavior: qualityState.behavior,
-        teacher_notes: notes,
+        teacher_notes: document.getElementById('log-notes').value.trim() || null,
       });
-
       if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
-
-      closeModals();
-      await loadStudents();
-      await loadLogs();
+      closeModals(); await loadStudents(); await loadLogs();
     }
 
     async function deleteStudent(id, name) {
-      if (!confirm(`Remove ${name} from your class? This will also delete all their progress logs.`)) return;
+      if (!confirm(`Remove ${name}? This will also delete all their progress logs.`)) return;
       await db.from('progress_logs').delete().eq('student_id', id);
       await db.from('students').delete().eq('id', id);
-      await loadStudents();
-      await loadLogs();
+      await loadStudents(); await loadLogs();
     }
 
-    async function signOut() {
-      await db.auth.signOut();
-      window.location.href = base() + 'index.html';
+    async function cancelSubscription() {
+      const val = document.getElementById('cancel-confirm').value.trim();
+      const errEl = document.getElementById('cancel-error');
+      const sucEl = document.getElementById('cancel-success');
+      const btn = document.getElementById('cancel-btn');
+      if (val !== 'CANCEL') { errEl.textContent = 'Please type CANCEL to confirm.'; errEl.style.display = 'block'; return; }
+      btn.disabled = true; btn.textContent = 'Processing…';
+      if (currentUser.org_id) {
+        const { error } = await db.from('organizations').update({ plan: 'cancelled' }).eq('id', currentUser.org_id);
+        if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Deactivate Account'; return; }
+      }
+      sucEl.textContent = 'Subscription cancelled. Your data is preserved. We\'re sorry to see you go.';
+      sucEl.style.display = 'block';
+      document.getElementById('subscription-status').textContent = '⚠️ Subscription cancelled.';
     }
+
+    async function signOut() { await db.auth.signOut(); window.location.href = base() + 'index.html'; }
 
     document.querySelectorAll('.modal-overlay').forEach(el => {
       el.addEventListener('click', e => { if (e.target === el) closeModals(); });
