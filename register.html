@@ -292,7 +292,7 @@
         body: JSON.stringify({
           org_name: orgData.name || '',
           email: orgData.email,
-          success_url: baseUrl + 'register.html?step=account',
+          success_url: baseUrl + 'register.html?step=account&session_id={CHECKOUT_SESSION_ID}',
           cancel_url: baseUrl + 'register.html',
         })
       });
@@ -368,23 +368,18 @@
     window.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(window.location.search);
       if (params.get('step') === 'account') {
-        // Returning from Stripe — restore org data and go to step 3
         const savedOrg = sessionStorage.getItem('pendingOrg');
-        if (savedOrg) {
-          orgData = JSON.parse(savedOrg);
-          // Update step indicators manually without triggering Stripe init
-          [1,2,3,4].forEach(i => {
-            const numEl = document.getElementById(`step-num-${i}`);
-            const labelEl = document.getElementById(`step-label-${i}`);
-            numEl.className = 'step-num' + (i < 3 ? ' done' : i === 3 ? ' active' : '');
-            numEl.textContent = i < 3 ? '\u2713' : i;
-            labelEl.className = 'step-label' + (i === 3 ? ' active' : '');
-          });
-          document.getElementById('step1').style.display = 'none';
-          document.getElementById('step2').style.display = 'none';
-          document.getElementById('step3').style.display = 'block';
-          document.getElementById('step4').style.display = 'none';
-        }
+        if (savedOrg) { orgData = JSON.parse(savedOrg); }
+        // Always show step 3 when returning from Stripe regardless of sessionStorage
+        [1,2,3,4].forEach(i => {
+          const numEl = document.getElementById(`step-num-${i}`);
+          const labelEl = document.getElementById(`step-label-${i}`);
+          numEl.className = 'step-num' + (i < 3 ? ' done' : i === 3 ? ' active' : '');
+          numEl.textContent = i < 3 ? '\u2713' : String(i);
+          labelEl.className = 'step-label' + (i === 3 ? ' active' : '');
+          document.getElementById(`step${i}`).style.display = i === 3 ? 'block' : 'none';
+        });
+        setTimeout(() => { const el = document.getElementById('admin-name'); if (el) el.focus(); }, 100);
       }
     });
   </script>
