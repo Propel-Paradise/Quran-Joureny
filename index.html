@@ -91,9 +91,9 @@
     }
     .footer-links a:hover { color: #047857; }
 
-    /* Forgot password panel */
     #forgot-panel { display: none; }
     #login-panel { display: block; }
+    #change-pw-panel { display: none; }
   </style>
 </head>
 <body>
@@ -132,6 +132,25 @@
         <a href="#" onclick="showForgot(); return false;">Forgot password?</a>
         <a href="register.html">New organization?</a>
       </div>
+    </div>
+
+    <!-- CHANGE PASSWORD PANEL (first login) -->
+    <div id="change-pw-panel">
+      <h1>Set your password</h1>
+      <p class="subtitle">You're using a temporary password. Please set a new one before continuing.</p>
+
+      <div id="changepw-error" class="error" style="display:none;"></div>
+
+      <div class="field">
+        <label>New Password</label>
+        <input type="password" id="new-password" placeholder="Minimum 8 characters" />
+      </div>
+      <div class="field">
+        <label>Confirm Password</label>
+        <input type="password" id="new-password2" placeholder="Re-enter password" />
+      </div>
+
+      <button class="btn-primary" id="changepw-btn" onclick="changePassword()">Set Password & Continue</button>
     </div>
 
     <!-- FORGOT PASSWORD PANEL -->
@@ -218,8 +237,40 @@
         return;
       }
 
+      // Check if first login (must change password)
+      if (userData && userData.must_change_password) {
+        document.getElementById('login-panel').style.display = 'none';
+        document.getElementById('change-pw-panel').style.display = 'block';
+        return;
+      }
+
       const base = window.location.href.replace('index.html', '').replace(/\/$/, '');
       window.location.href = selectedRole === 'school' ? base + '/school.html' : base + '/parent.html';
+    }
+
+    async function changePassword() {
+      const pw = document.getElementById('new-password').value;
+      const pw2 = document.getElementById('new-password2').value;
+      const btn = document.getElementById('changepw-btn');
+      const errEl = document.getElementById('changepw-error');
+
+      if (pw.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.style.display = 'block'; return; }
+      if (pw !== pw2) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+
+      btn.disabled = true; btn.textContent = 'Saving…';
+      errEl.style.display = 'none';
+
+      const { error } = await db.auth.updateUser({ password: pw });
+      if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Set Password & Continue'; return; }
+
+      // Clear the must_change_password flag
+      const { data: { session } } = await db.auth.getSession();
+      if (session) {
+        await db.from('users').update({ must_change_password: false }).eq('email', session.user.email);
+        const { data: userData } = await db.from('users').select('role').eq('email', session.user.email).single();
+        const base = window.location.href.replace('index.html', '').replace(/\/$/, '');
+        window.location.href = userData?.role === 'teacher' ? base + '/school.html' : base + '/parent.html';
+      }
     }
 
     async function sendReset() {
