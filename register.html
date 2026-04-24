@@ -275,7 +275,7 @@
       sessionStorage.setItem('pendingPM', paymentMethod.id);
 
       // Call Supabase Edge Function to create Stripe Checkout Session
-      const baseUrl = window.location.origin + window.location.pathname.replace('register.html', '');
+      const baseUrl = 'https://propel-paradise.github.io/Quran-Joureny/';
       const resp = await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SUPABASE_KEY}` },
