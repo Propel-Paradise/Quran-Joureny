@@ -132,6 +132,9 @@
         <a href="#" onclick="showForgot(); return false;">Forgot password?</a>
         <a href="register.html">New organization?</a>
       </div>
+      <div id="cancel-redirect" style="display:none;margin-top:12px;text-align:center">
+        <a href="register.html" style="font-size:12px;color:#047857;text-decoration:none;font-weight:500">→ Reactivate your organization</a>
+      </div>
     </div>
 
     <!-- CHANGE PASSWORD PANEL (first login) -->
@@ -241,6 +244,20 @@
       if (userData && userData.must_change_password) {
         window.location.href = base + '/change-password.html';
         return;
+      }
+
+      // Check if org is cancelled
+      if (userData.org_id) {
+        const { data: org } = await db.from('organizations').select('plan').eq('id', userData.org_id).single();
+        if (org?.plan === 'cancelled') {
+          await db.auth.signOut();
+          showError('Your subscription has been cancelled. Please reactivate to continue.');
+          const cancelLink = document.getElementById('cancel-redirect');
+          if (cancelLink) cancelLink.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Sign in';
+          return;
+        }
       }
 
       const base = window.location.href.replace('index.html', '').replace(/\/$/, '');
