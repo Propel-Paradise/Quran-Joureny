@@ -141,6 +141,7 @@
     <div class="topbar-right">
       <span id="parent-name-display" style="font-size:12px;color:#3a3f3c"></span>
       <div class="avatar" id="parent-avatar">P</div>
+      <button class="signout-btn" onclick="openParentChangePassword()" style="margin-right:4px">Change PW</button>
       <button class="signout-btn" onclick="signOut()">Sign out</button>
     </div>
   </div>
@@ -194,6 +195,28 @@
     </div>
   </div>
 
+  <!-- CHANGE PASSWORD MODAL -->
+  <div class="modal-overlay" id="parent-cp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;z-index:100;padding:20px">
+    <div style="background:#fff;border-radius:10px;padding:28px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
+      <h2 style="font-size:17px;font-weight:600;margin-bottom:4px">Change Password</h2>
+      <p style="font-size:12px;color:#737773;margin-bottom:20px">Set a new password for your account.</p>
+      <div id="parent-cp-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:7px;padding:9px 12px;font-size:12px;margin-bottom:14px"></div>
+      <div id="parent-cp-success" style="display:none;background:#ecfdf5;border:1px solid #6ee7b7;color:#047857;border-radius:7px;padding:9px 12px;font-size:12px;margin-bottom:14px"></div>
+      <div style="margin-bottom:14px">
+        <label style="display:block;font-size:10.5px;color:#737773;letter-spacing:0.4px;text-transform:uppercase;font-weight:500;margin-bottom:6px">New Password</label>
+        <input type="password" id="parent-cp-pw" placeholder="Minimum 8 characters" style="width:100%;padding:9px 12px;border-radius:7px;border:1px solid #e3e0da;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none" />
+      </div>
+      <div style="margin-bottom:20px">
+        <label style="display:block;font-size:10.5px;color:#737773;letter-spacing:0.4px;text-transform:uppercase;font-weight:500;margin-bottom:6px">Confirm Password</label>
+        <input type="password" id="parent-cp-pw2" placeholder="Re-enter password" style="width:100%;padding:9px 12px;border-radius:7px;border:1px solid #e3e0da;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none" />
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button onclick="closeParentCpModal()" style="padding:7px 14px;border-radius:7px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;font-weight:500;cursor:pointer;background:#fff;color:#3a3f3c;border:1px solid #e3e0da">Cancel</button>
+        <button id="parent-cp-btn" onclick="saveParentPassword()" style="padding:7px 14px;border-radius:7px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;font-weight:600;cursor:pointer;background:#0f1411;color:#fff;border:none">Update Password</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://fdibhjmbabdcphldnvmq.supabase.co';
@@ -214,6 +237,11 @@
 
       if (!userData || userData.role !== 'parent') {
         window.location.href = redirectBase() + 'index.html'; return;
+      }
+
+      // First login — must set a real password before proceeding
+      if (userData.must_change_password) {
+        window.location.href = redirectBase() + 'change-password.html'; return;
       }
 
       currentUser = userData;
@@ -267,7 +295,14 @@
 
       // Stats
       document.getElementById('stat-sessions').textContent = allLogs.length;
-      document.getElementById('stat-juz').textContent = student.juz_target != null ? `${student.juz_target}` : '—';
+      // Calculate juz from logs (same logic as school side — only non-failed sabaq counts)
+      const PAGES_PER_JUZ = 20;
+      const baseJuz = student.juz_target ?? 0;
+      const earnedPages = allLogs
+        .filter(l => !l.sabaq_failed && l.sabaq_quality !== 'Failed')
+        .reduce((sum, l) => sum + (l.sabaq_pages || 0), 0);
+      const currentJuz = Math.min(baseJuz + Math.floor(earnedPages / PAGES_PER_JUZ), 30);
+      document.getElementById('stat-juz').textContent = currentJuz;
 
       if (allLogs.length > 0) {
         const last = allLogs[0];
@@ -306,7 +341,7 @@
         const dateStr = new Date(l.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
         const sabaqFailed = l.sabaq_failed || l.sabaq_quality === 'Failed';
-        const sabaqVal = [l.sabaq_juz ? `Juz ${l.sabaq_juz}` : '', l.sabaq_pages ? `${l.sabaq_pages} pages` : ''].filter(Boolean).join(' · ') || '—';
+        const sabaqVal = [l.sabaq_juz ? `Juz ${l.sabaq_juz}` : '', l.sabaq_pages ? `${l.sabaq_pages} pages` : '', l.sabaq_lines ? `${l.sabaq_lines} lines` : ''].filter(Boolean).join(' · ') || '—';
         const sabaqQ = sabaqFailed ? `<span class="pill pill-danger">Failed</span>` : qualityPill(l.sabaq_quality);
 
         const sabqiFailed = l.sabqi_failed || l.sabqi_quality === 'Failed';
@@ -372,6 +407,49 @@
       document.getElementById('stat-last-sub').textContent = '—';
       document.getElementById('last-updated').textContent = '';
     }
+
+    function openParentChangePassword() {
+      document.getElementById('parent-cp-modal').style.display = 'flex';
+      document.getElementById('parent-cp-pw').focus();
+    }
+
+    function closeParentCpModal() {
+      document.getElementById('parent-cp-modal').style.display = 'none';
+      document.getElementById('parent-cp-pw').value = '';
+      document.getElementById('parent-cp-pw2').value = '';
+      document.getElementById('parent-cp-error').style.display = 'none';
+      document.getElementById('parent-cp-success').style.display = 'none';
+    }
+
+    async function saveParentPassword() {
+      const pw = document.getElementById('parent-cp-pw').value;
+      const pw2 = document.getElementById('parent-cp-pw2').value;
+      const btn = document.getElementById('parent-cp-btn');
+      const errEl = document.getElementById('parent-cp-error');
+      const sucEl = document.getElementById('parent-cp-success');
+
+      if (pw.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.style.display = 'block'; return; }
+      if (pw !== pw2) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+
+      btn.disabled = true; btn.textContent = 'Saving…';
+      errEl.style.display = 'none'; sucEl.style.display = 'none';
+
+      const { error } = await db.auth.updateUser({ password: pw });
+      btn.disabled = false; btn.textContent = 'Update Password';
+
+      if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
+      else {
+        sucEl.textContent = 'Password updated!';
+        sucEl.style.display = 'block';
+        document.getElementById('parent-cp-pw').value = '';
+        document.getElementById('parent-cp-pw2').value = '';
+      }
+    }
+
+    // Close modal on overlay click
+    document.getElementById('parent-cp-modal').addEventListener('click', e => {
+      if (e.target === document.getElementById('parent-cp-modal')) closeParentCpModal();
+    });
 
     async function signOut() {
       await db.auth.signOut();
