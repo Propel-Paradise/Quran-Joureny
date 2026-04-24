@@ -314,16 +314,18 @@
         const sabqiQ = sabqiFailed ? `<span class="pill pill-danger">Failed</span>` : qualityPill(l.sabqi_quality);
 
         const manzilFailed = l.manzil_failed || l.manzil_quality === 'Failed';
-        const manzilVal = [l.manzil_fraction, l.manzil_juz, l.manzil_pages ? `${l.manzil_pages}p` : ''].filter(Boolean).join(' · ') || '—';
+        const manzilVal = [
+          l.manzil_pages != null ? `${l.manzil_pages}${l.manzil_fraction || ''} Juz` : (l.manzil_fraction ? l.manzil_fraction + ' Juz' : ''),
+          l.manzil_juz
+        ].filter(Boolean).join(' · ') || '—';
         const manzilQ = manzilFailed ? `<span class="pill pill-danger">Failed</span>` : qualityPill(l.manzil_quality);
 
         return `
           <div class="log-block">
             <div class="log-header">
               <div class="log-date">${dateStr}</div>
-              ${l.behavior ? `<span>${qualityPill(l.behavior)} behavior</span>` : ''}
             </div>
-            <div class="log-grid">
+            <div class="log-grid" style="grid-template-columns:repeat(4,1fr)">
               <div class="log-section ${sabaqFailed ? 'log-section-failed' : ''}">
                 <div class="log-section-title">Sabaq</div>
                 <div class="log-section-val">${sabaqVal}</div>
@@ -338,6 +340,10 @@
                 <div class="log-section-title">Manzil</div>
                 <div class="log-section-val">${manzilVal}</div>
                 <div class="log-section-sub">${manzilQ}</div>
+              </div>
+              <div class="log-section">
+                <div class="log-section-title">Behavior</div>
+                <div class="log-section-val">${l.behavior ? qualityPill(l.behavior) : '<span style="color:#737773;font-size:12px">—</span>'}</div>
               </div>
             </div>
             ${l.teacher_notes ? `
