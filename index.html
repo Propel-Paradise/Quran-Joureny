@@ -240,6 +240,8 @@
         return;
       }
 
+      const base = 'https://propel-paradise.github.io/Quran-Journey';
+
       // Check user is_active
       if (userData && userData.is_active === false) {
         await db.auth.signOut();
@@ -253,8 +255,8 @@
         return;
       }
 
-      // Check org is_active
-      if (userData && userData.org_id) {
+      // Check org is_active (only for school accounts)
+      if (userData && userData.org_id && userData.role === 'teacher') {
         const { data: org } = await db.from('organizations').select('is_active, plan').eq('id', userData.org_id).single();
         if (org && org.is_active === false) {
           await db.auth.signOut();
@@ -268,7 +270,6 @@
         }
       }
 
-      const base = window.location.href.replace('index.html', '').replace(/\/$/, '');
       window.location.href = selectedRole === 'school' ? base + '/school.html' : base + '/parent.html';
     }
 
