@@ -388,6 +388,33 @@
     </div>
   </div>
 
+  <!-- EDIT STUDENT MODAL -->
+  <div class="modal-overlay" id="edit-student-modal" style="display:none">
+    <div class="modal">
+      <h2>Edit Student</h2>
+      <p class="sub">Update this student's profile.</p>
+      <div id="edit-student-error" class="error-box" style="display:none"></div>
+      <input type="hidden" id="edit-student-id" />
+      <div class="field">
+        <label>Student Name</label>
+        <input type="text" id="edit-student-name" placeholder="e.g. Yusuf Ahmed" />
+      </div>
+      <div class="field">
+        <label>Juz Known (baseline)</label>
+        <input type="number" id="edit-student-juz" min="0" max="30" placeholder="e.g. 3" />
+        <div class="hint">This is the starting baseline. Progress from logs is calculated on top of this.</div>
+      </div>
+      <div class="field">
+        <label>Linked Parent Account</label>
+        <select id="edit-student-parent"><option value="">No parent linked</option></select>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEditStudent()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
   <!-- CHANGE PASSWORD MODAL -->
   <div class="modal-overlay" id="change-password-modal" style="display:none">
     <div class="modal">
@@ -585,6 +612,7 @@
             <div style="font-size:12px">${parentLabel}</div>
             <div style="font-size:12px;color:#737773;font-family:'IBM Plex Mono',monospace">${lastDate}</div>
             <div class="action-btns">
+              <button class="icon-btn" onclick="openEditStudentModal(${s.id})">Edit</button>
               <button class="icon-btn" onclick="quickLog(${s.id})">Log</button>
               <button class="icon-btn icon-btn-danger" onclick="deleteStudent(${s.id},'${s.name.replace(/'/g,"\\'")}')">✕</button>
             </div>
@@ -657,7 +685,7 @@
     function closeModals() {
       document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.error-box').forEach(el => el.style.display = 'none');
-      ['new-student-name','new-student-juz','log-sabaq-juz','log-sabaq-pages','log-sabaq-lines','log-sabqi-juz','log-sabqi-pages','log-manzil-count','log-manzil-juz','log-notes','new-parent-name','new-parent-email','cancel-confirm','cp-new-password','cp-new-password2'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      ['new-student-name','new-student-juz','log-sabaq-juz','log-sabaq-pages','log-sabaq-lines','log-sabqi-juz','log-sabqi-pages','log-manzil-count','log-manzil-juz','log-notes','new-parent-name','new-parent-email','cancel-confirm','cp-new-password','cp-new-password2','edit-student-name','edit-student-juz'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
       document.getElementById('new-student-parent').value = '';
       Object.keys(qualityState).forEach(k => qualityState[k] = null);
       manzilFraction = null;
@@ -789,16 +817,51 @@
       if (val !== 'CANCEL') { errEl.textContent = 'Please type CANCEL to confirm.'; errEl.style.display = 'block'; return; }
       btn.disabled = true; btn.textContent = 'Processing…';
       if (currentUser.org_id) {
-        const { error } = await db.from('organizations').update({ plan: 'cancelled' }).eq('id', currentUser.org_id);
-        if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Deactivate Account'; return; }
+        // Soft-delete: mark inactive, keep all data
+        await db.from('organizations').update({ is_active: false, plan: 'cancelled' }).eq('id', currentUser.org_id);
+        await db.from('users').update({ is_active: false }).eq('org_id', currentUser.org_id);
       }
-      sucEl.textContent = 'Subscription cancelled. Your data is preserved. Signing you out…';
+      sucEl.textContent = 'Subscription cancelled. Signing you out in a moment…';
       sucEl.style.display = 'block';
       document.getElementById('subscription-status').textContent = '⚠️ Subscription cancelled.';
-      setTimeout(async () => {
-        await db.auth.signOut();
-        window.location.href = base() + 'index.html';
-      }, 2500);
+      setTimeout(async () => { await db.auth.signOut(); window.location.href = base() + 'index.html'; }, 2500);
+    }
+
+    function openEditStudentModal(studentId) {
+      const s = students.find(st => st.id === studentId);
+      if (!s) return;
+      document.getElementById('edit-student-id').value = s.id;
+      document.getElementById('edit-student-name').value = s.name;
+      document.getElementById('edit-student-juz').value = s.juz_target ?? '';
+
+      // Populate parent dropdown
+      const sel = document.getElementById('edit-student-parent');
+      sel.innerHTML = '<option value="">No parent linked</option>' +
+        parents.map(p => `<option value="${p.email}" ${p.email === s.parent_email ? 'selected' : ''}>${p.name} (${p.email})</option>`).join('');
+
+      document.getElementById('edit-student-modal').style.display = 'flex';
+      document.getElementById('edit-student-name').focus();
+    }
+
+    async function saveEditStudent() {
+      const id = parseInt(document.getElementById('edit-student-id').value);
+      const name = document.getElementById('edit-student-name').value.trim();
+      const juz = document.getElementById('edit-student-juz').value;
+      const parentEmail = document.getElementById('edit-student-parent').value;
+      const errEl = document.getElementById('edit-student-error');
+
+      if (!name) { errEl.textContent = 'Please enter a student name.'; errEl.style.display = 'block'; return; }
+
+      const { error } = await db.from('students').update({
+        name,
+        juz_target: juz !== '' ? parseInt(juz) : 0,
+        parent_email: parentEmail || null,
+      }).eq('id', id);
+
+      if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+      closeModals();
+      await loadStudents();
+      await loadLogs();
     }
 
     function openChangePasswordModal() {
