@@ -159,7 +159,7 @@
         </div>
       </div>
       <div style="margin-bottom:14px">
-        <input type="text" id="student-search" placeholder="Search students…" oninput="renderStudents()" autocomplete="off"
+        <input type="search" id="student-search" placeholder="Search students…" oninput="renderStudents()" autocomplete="off" name="student-search-field"
           style="width:100%;max-width:300px;padding:8px 12px;border-radius:7px;border:1px solid #e3e0da;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none" />
       </div>
       <div class="table-wrap">
@@ -201,10 +201,7 @@
         <div class="section-title">Progress Logs</div>
         <button class="btn btn-primary" onclick="openLogModal()">+ Log Progress</button>
       </div>
-      <div class="table-wrap" style="overflow-x:auto">
-        <div class="table-head" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1.5fr;min-width:700px">
-          <div>Student</div><div>Date</div><div>Sabaq</div><div>Sabqi</div><div>Manzil</div><div>Behavior / Notes</div>
-        </div>
+      <div class="table-wrap">
         <div id="logs-list"><div class="loading">Loading logs…</div></div>
       </div>
     </div>
@@ -242,13 +239,6 @@
         <input type="text" id="new-student-name" placeholder="e.g. Yusuf Ahmed" />
       </div>
 
-      <div class="field">
-        <label>Mushaf Type</label>
-        <select id="new-student-mushaf">
-          <option value="madani">Madani (Saudi / Hafs — 604 pages)</option>
-          <option value="indopak">Indo-Pak (15 line — 558 pages)</option>
-        </select>
-      </div>
       <div class="field">
         <label>Linked Parent Account</label>
         <select id="new-student-parent"><option value="">Select parent…</option></select>
@@ -406,13 +396,6 @@
         <input type="text" id="edit-student-name" placeholder="e.g. Yusuf Ahmed" />
       </div>
 
-      <div class="field">
-        <label>Mushaf Type</label>
-        <select id="edit-student-mushaf">
-          <option value="madani">Madani (Saudi / Hafs — 604 pages)</option>
-          <option value="indopak">Indo-Pak (15 line — 558 pages)</option>
-        </select>
-      </div>
       <div class="field">
         <label>Linked Parent Account</label>
         <select id="edit-student-parent"><option value="">No parent linked</option></select>
@@ -626,26 +609,73 @@
         el.innerHTML = `<div class="empty-state"><div class="big">📝</div>No logs yet.</div>`;
         return;
       }
-      el.innerHTML = logs.map(l => {
-        const dateStr = new Date(l.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const sabaqStr = [
-          l.sabaq_lines ? `${l.sabaq_lines} lines` : ''
-        ].filter(Boolean).join(' · ') || '—';
-        const sabqiStr = l.sabqi_pages ? `${l.sabqi_pages}p` : (l.sabqi_juz || '—');
-        const manzilStr = [
-          l.manzil_pages != null ? `${l.manzil_pages}${l.manzil_fraction ? l.manzil_fraction : ''} Juz` : (l.manzil_fraction ? l.manzil_fraction + ' Juz' : ''),
-          l.manzil_juz
-        ].filter(Boolean).join(' · ') || '—';
+
+      // Group logs by student
+      const grouped = {};
+      logs.forEach(l => {
+        const name = l.students?.name || 'Unknown';
+        if (!grouped[name]) grouped[name] = [];
+        grouped[name].push(l);
+      });
+
+      const sortedNames = Object.keys(grouped).sort();
+
+      el.innerHTML = sortedNames.map((name, idx) => {
+        const studentLogs = grouped[name];
+        const latest = studentLogs[0];
+        const latestDate = new Date(latest.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const sabaqQ = latest.sabaq_failed ? '<span class="pill" style="background:#fef2f2;color:#b91c1c">Failed</span>' : qualityPill(latest.sabaq_quality);
+
+        const rows = studentLogs.map(l => {
+          const dateStr = new Date(l.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          const sabaqStr = l.sabaq_lines ? `${l.sabaq_lines} lines` : '—';
+          const sabqiStr = l.sabqi_pages ? `${l.sabqi_pages}p` : (l.sabqi_juz || '—');
+          const manzilStr = [
+            l.manzil_pages != null ? `${l.manzil_pages}${l.manzil_fraction || ''} Juz` : (l.manzil_fraction ? l.manzil_fraction + ' Juz' : ''),
+            l.manzil_juz
+          ].filter(Boolean).join(' · ') || '—';
+          return `
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:0;padding:10px 16px;border-bottom:1px solid #f4f3ef;font-size:12px;background:#fff" class="log-inner-row">
+              <div style="color:#737773;font-family:'IBM Plex Mono',monospace">${dateStr}</div>
+              <div>${sabaqStr} ${l.sabaq_failed ? '<span class="pill" style="background:#fef2f2;color:#b91c1c;font-size:10px">Failed</span>' : qualityPill(l.sabaq_quality)}</div>
+              <div>${sabqiStr} ${qualityPill(l.sabqi_quality)}</div>
+              <div>${manzilStr} ${qualityPill(l.manzil_quality)}</div>
+              <div>${qualityPill(l.behavior)} <span style="color:#737773;font-size:11px">${l.teacher_notes || ''}</span></div>
+            </div>`;
+        }).join('');
+
         return `
-          <div class="table-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1.5fr;min-width:700px">
-            <div class="student-name">${l.students?.name || '—'}</div>
-            <div style="font-size:11px;color:#737773;font-family:'IBM Plex Mono',monospace">${dateStr}</div>
-            <div>${sabaqStr} ${qualityPill(l.sabaq_quality)}</div>
-            <div style="font-size:12px">${sabqiStr} ${qualityPill(l.sabqi_quality)}</div>
-            <div style="font-size:12px">${manzilStr} ${qualityPill(l.manzil_quality)}</div>
-            <div style="font-size:12px">${qualityPill(l.behavior)} <span style="color:#737773">${l.teacher_notes||''}</span></div>
+          <div style="border-bottom:1px solid #eceae5">
+            <div onclick="toggleStudentLogs('group-${idx}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:#fafaf9;user-select:none" class="student-log-header">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="font-weight:600;font-size:13px">${name}</div>
+                <span style="font-size:11px;color:#737773">${studentLogs.length} session${studentLogs.length !== 1 ? 's' : ''}</span>
+                <span style="font-size:11px;color:#737773">Last: ${latestDate}</span>
+                ${sabaqQ}
+              </div>
+              <div id="chevron-${idx}" style="color:#737773;font-size:12px;transition:transform 0.2s">▼</div>
+            </div>
+            <div id="group-${idx}" style="display:none">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:0;padding:8px 16px;background:#f8f7f4;border-bottom:1px solid #eceae5">
+                <div style="font-size:10px;color:#737773;text-transform:uppercase;letter-spacing:0.3px;font-weight:500">Date</div>
+                <div style="font-size:10px;color:#737773;text-transform:uppercase;letter-spacing:0.3px;font-weight:500">Sabaq</div>
+                <div style="font-size:10px;color:#737773;text-transform:uppercase;letter-spacing:0.3px;font-weight:500">Sabqi</div>
+                <div style="font-size:10px;color:#737773;text-transform:uppercase;letter-spacing:0.3px;font-weight:500">Manzil</div>
+                <div style="font-size:10px;color:#737773;text-transform:uppercase;letter-spacing:0.3px;font-weight:500">Behavior</div>
+              </div>
+              ${rows}
+            </div>
           </div>`;
       }).join('');
+    }
+
+    function toggleStudentLogs(groupId) {
+      const el = document.getElementById(groupId);
+      const idx = groupId.replace('group-', '');
+      const chevron = document.getElementById(`chevron-${idx}`);
+      const isOpen = el.style.display !== 'none';
+      el.style.display = isOpen ? 'none' : 'block';
+      chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
     }
 
     function qualityPill(q) {
@@ -744,7 +774,6 @@
       document.querySelectorAll('.error-box').forEach(el => el.style.display = 'none');
       ['new-student-name','log-sabaq-lines','log-sabqi-juz','log-sabqi-pages','log-manzil-count','log-manzil-juz','log-notes','new-parent-name','new-parent-email','cancel-confirm','cp-new-password','cp-new-password2','edit-student-name'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
       document.getElementById('new-student-parent').value = '';
-      if (document.getElementById('new-student-mushaf')) document.getElementById('new-student-mushaf').value = 'madani';
       Object.keys(qualityState).forEach(k => qualityState[k] = null);
       manzilFraction = null;
       document.querySelectorAll('.quality-btn').forEach(b => b.className = 'quality-btn');
@@ -820,7 +849,7 @@
       const parentEmail = document.getElementById('new-student-parent').value;
       const errEl = document.getElementById('add-student-error');
       if (!name) { errEl.textContent = 'Please enter a student name.'; errEl.style.display = 'block'; return; }
-      const payload = { name, parent_email: parentEmail || null, mushaf_type: document.getElementById('new-student-mushaf').value || 'madani' };
+      const payload = { name, parent_email: parentEmail || null };
       if (currentUser.org_id) payload.org_id = currentUser.org_id;
       const { error } = await db.from('students').insert(payload);
       if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
@@ -888,7 +917,6 @@
       if (!s) return;
       document.getElementById('edit-student-id').value = s.id;
       document.getElementById('edit-student-name').value = s.name;
-      document.getElementById('edit-student-mushaf').value = s.mushaf_type || 'madani';
 
       // Populate parent dropdown
       const sel = document.getElementById('edit-student-parent');
