@@ -341,7 +341,13 @@
         const dateStr = new Date(l.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
 
         const sabaqFailed = l.sabaq_failed || l.sabaq_quality === 'Failed';
-        const sabaqVal = [l.sabaq_juz ? `Juz ${l.sabaq_juz}` : '', l.sabaq_pages ? `${l.sabaq_pages} pages` : '', l.sabaq_lines ? `${l.sabaq_lines} lines` : ''].filter(Boolean).join(' · ') || '—';
+        const sabaqVal = [
+          l.sabaq_surah ? `Surah ${l.sabaq_surah}` : '',
+          l.sabaq_ayah_start && l.sabaq_ayah_end ? `Ayah ${l.sabaq_ayah_start}–${l.sabaq_ayah_end}` : '',
+          l.sabaq_juz ? `Juz ${l.sabaq_juz}` : '',
+          l.sabaq_pages ? `${l.sabaq_pages} pages` : '',
+          l.sabaq_lines ? `${l.sabaq_lines} lines` : ''
+        ].filter(Boolean).join(' · ') || '—';
         const sabaqQ = sabaqFailed ? `<span class="pill pill-danger">Failed</span>` : qualityPill(l.sabaq_quality);
 
         const sabqiFailed = l.sabqi_failed || l.sabqi_quality === 'Failed';
