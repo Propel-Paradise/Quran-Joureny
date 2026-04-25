@@ -174,11 +174,22 @@
     <div id="tab-parents" class="tab-content">
       <div class="section-header">
         <div class="section-title">Parents</div>
-        <button class="btn btn-primary" onclick="openAddParentModal()">+ Add Parent</button>
+      </div>
+      <div id="invite-code-banner" style="background:#f0fdf4;border:1px solid #6ee7b7;border-radius:8px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:10.5px;color:#047857;text-transform:uppercase;letter-spacing:0.4px;font-weight:600;margin-bottom:4px">Your School Invite Code</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:#0f1411;letter-spacing:3px" id="invite-code-display">—</div>
+          <div style="font-size:11px;color:#737773;margin-top:3px">Share this with parents — they register at <a href="join.html" target="_blank" style="color:#047857">join.html</a> or you can copy a direct link below</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" onclick="copyInviteCode()">Copy Code</button>
+          <button class="btn btn-secondary" onclick="copyJoinLink()">Copy Join Link</button>
+          <button class="btn btn-secondary" onclick="regenerateInviteCode()">New Code</button>
+        </div>
       </div>
       <div class="table-wrap">
-        <div class="table-head" style="grid-template-columns:1.5fr 1.5fr 1fr 1fr 100px">
-          <div>Name</div><div>Email</div><div>Temp Password</div><div>Linked Students</div><div style="text-align:right">Actions</div>
+        <div class="table-head" style="grid-template-columns:1.5fr 1.5fr 1.5fr 80px">
+          <div>Name</div><div>Email</div><div>Linked Students</div><div style="text-align:right">Actions</div>
         </div>
         <div id="parents-list"><div class="loading">Loading parents…</div></div>
       </div>
@@ -250,40 +261,19 @@
   </div>
 
   <!-- ADD PARENT MODAL -->
+  <!-- INVITE LINK MODAL (kept for copy link functionality) -->
   <div class="modal-overlay" id="add-parent-modal" style="display:none">
     <div class="modal">
-      <h2>Add Parent</h2>
-      <p class="sub">Create a login for a parent. Share the temporary password with them directly — they'll be prompted to change it when they first sign in.</p>
+      <h2>Share Invite Link</h2>
+      <p class="sub">Send this link to parents. They'll create their own account using your school's invite code.</p>
       <div id="add-parent-error" class="error-box" style="display:none"></div>
-      <div id="add-parent-result" style="display:none">
-        <div class="success-box">✓ Parent account created!</div>
-        <div class="info-box">Share these credentials with the parent. The password will not be shown again.</div>
-        <div class="password-reveal">
-          <div class="pw-label">Email</div>
-          <div class="pw" id="result-email" style="font-size:14px;letter-spacing:0"></div>
-        </div>
-        <div class="password-reveal">
-          <div class="pw-label">Temporary Password</div>
-          <div class="pw" id="result-password"></div>
-          <button class="copy-btn" onclick="copyPassword()">Copy password</button>
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-primary" onclick="closeModals()">Done</button>
-        </div>
+      <div class="password-reveal">
+        <div class="pw-label">Invite Link</div>
+        <div class="pw" id="invite-link-display" style="font-size:12px;letter-spacing:0;word-break:break-all"></div>
+        <button class="copy-btn" onclick="copyInviteLink()">Copy link</button>
       </div>
-      <div id="add-parent-form">
-        <div class="field">
-          <label>Parent Name</label>
-          <input type="text" id="new-parent-name" placeholder="e.g. Ahmed Al-Rashid" />
-        </div>
-        <div class="field">
-          <label>Parent Email</label>
-          <input type="email" id="new-parent-email" placeholder="parent@gmail.com" />
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-secondary" onclick="closeModals()">Cancel</button>
-          <button class="btn btn-primary" id="add-parent-btn" onclick="addParent()">Create Account</button>
-        </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="closeModals()">Done</button>
       </div>
     </div>
   </div>
@@ -541,6 +531,7 @@
       await loadParents();
       await loadStudents();
       await loadLogs();
+      await loadInviteCode();
     }
 
     async function loadParents() {
@@ -557,19 +548,15 @@
     function renderParents() {
       const el = document.getElementById('parents-list');
       if (parents.length === 0) {
-        el.innerHTML = `<div class="empty-state"><div class="big">👤</div>No parents yet. Add a parent to get started.</div>`;
+        el.innerHTML = `<div class="empty-state"><div class="big">👤</div>No parents yet. Share the invite code above with parents so they can register.</div>`;
         return;
       }
       el.innerHTML = parents.map(p => {
         const linked = students.filter(s => s.parent_email === p.email).map(s => s.name).join(', ') || '<span style="color:#737773">None linked</span>';
-        const pwCell = p.must_change_password && p.temp_password
-          ? `<span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#b45309;background:#fffbeb;padding:2px 7px;border-radius:4px;border:1px solid #fcd34d">${p.temp_password}</span>`
-          : `<button class="icon-btn" style="font-size:11px" onclick="resetParentPassword('${p.email}','${p.name.replace(/'/g,"\'")}')">↺ Reset PW</button>`;
         return `
-          <div class="table-row" style="grid-template-columns:1.5fr 1.5fr 1fr 1fr 100px">
+          <div class="table-row" style="grid-template-columns:1.5fr 1.5fr 1.5fr 80px">
             <div class="student-name">${p.name}</div>
             <div style="font-size:12px;color:#3a3f3c;font-family:'IBM Plex Mono',monospace">${p.email}</div>
-            <div>${pwCell}</div>
             <div style="font-size:12px">${linked}</div>
             <div class="action-btns">
               <button class="icon-btn icon-btn-danger" onclick="removeParent('${p.email}','${p.name.replace(/'/g,"\\'")}')">Remove</button>
@@ -931,6 +918,61 @@
       await loadStudents();
       await loadLogs();
     }
+
+    // ── INVITE CODE ──────────────────────────────────────────────
+    function generateCode() {
+      const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+      return Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('') + '-' +
+             Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    }
+
+    async function loadInviteCode() {
+      if (!currentUser.org_id) return;
+      const { data: org } = await db.from('organizations').select('invite_code').eq('id', currentUser.org_id).single();
+      if (org && org.invite_code) {
+        document.getElementById('invite-code-display').textContent = org.invite_code;
+      } else {
+        // Auto-generate one if none exists
+        const code = generateCode();
+        await db.from('organizations').update({ invite_code: code }).eq('id', currentUser.org_id);
+        document.getElementById('invite-code-display').textContent = code;
+      }
+    }
+
+    async function regenerateInviteCode() {
+      if (!confirm('Generate a new invite code? The old code will stop working.')) return;
+      const code = generateCode();
+      await db.from('organizations').update({ invite_code: code }).eq('id', currentUser.org_id);
+      document.getElementById('invite-code-display').textContent = code;
+    }
+
+    function copyJoinLink() {
+      const code = document.getElementById('invite-code-display').textContent;
+      const url = `https://propel-paradise.github.io/Quran-Journey/join.html?code=${encodeURIComponent(code)}`;
+      navigator.clipboard.writeText(url).then(() => {
+        const btn = event.target;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => btn.textContent = 'Copy Join Link', 2000);
+      });
+    }
+
+    function copyInviteCode() {
+      const code = document.getElementById('invite-code-display').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = event.target;
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => btn.textContent = 'Copy Code', 2000);
+      });
+    }
+
+    function copyInviteLink() {
+      const link = document.getElementById('invite-link-display').textContent;
+      navigator.clipboard.writeText(link).then(() => {
+        document.querySelector('.copy-btn').textContent = '✓ Copied!';
+        setTimeout(() => { const b = document.querySelector('.copy-btn'); if(b) b.textContent = 'Copy link'; }, 2000);
+      });
+    }
+    // ─────────────────────────────────────────────────────────────
 
     function openChangePasswordModal() {
       document.getElementById('change-password-modal').style.display = 'flex';
