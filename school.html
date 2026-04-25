@@ -236,6 +236,13 @@
         <div class="hint">Enter 0 if they are just starting out. This is the baseline — progress will be tracked on top of this.</div>
       </div>
       <div class="field">
+        <label>Mushaf Type</label>
+        <select id="new-student-mushaf">
+          <option value="madani">Madani (Saudi / Hafs — 604 pages)</option>
+          <option value="indopak">Indo-Pak (15 line — 558 pages)</option>
+        </select>
+      </div>
+      <div class="field">
         <label>Linked Parent Account</label>
         <select id="new-student-parent"><option value="">Select parent…</option></select>
       </div>
@@ -301,16 +308,29 @@
       </div>
       <div class="section-divider">Sabaq (New Lesson)</div>
       <div class="field-row">
-        <div class="field"><label>Surah #</label><input type="number" id="log-sabaq-surah" min="1" max="114" placeholder="e.g. 2" /></div>
-        <div class="field"><label>Juz #</label><input type="number" id="log-sabaq-juz" min="1" max="30" placeholder="e.g. 5" /></div>
+        <div class="field">
+          <label>Surah #</label>
+          <input type="number" id="log-sabaq-surah" min="1" max="114" placeholder="e.g. 2" oninput="updateSabaqPreview()" />
+        </div>
+        <div class="field">
+          <label>Juz #</label>
+          <input type="number" id="log-sabaq-juz" min="1" max="30" placeholder="e.g. 5" />
+        </div>
       </div>
       <div class="field-row">
-        <div class="field"><label>Ayah From</label><input type="number" id="log-sabaq-ayah-start" min="1" placeholder="e.g. 1" /></div>
-        <div class="field"><label>Ayah To</label><input type="number" id="log-sabaq-ayah-end" min="1" placeholder="e.g. 10" /></div>
+        <div class="field">
+          <label>Ayah From</label>
+          <input type="number" id="log-sabaq-ayah-start" min="1" placeholder="e.g. 1" oninput="updateSabaqPreview()" />
+        </div>
+        <div class="field">
+          <label>Ayah To</label>
+          <input type="number" id="log-sabaq-ayah-end" min="1" placeholder="e.g. 10" oninput="updateSabaqPreview()" />
+        </div>
       </div>
-      <div class="field-row">
-        <div class="field"><label>Pages</label><input type="number" id="log-sabaq-pages" min="0" placeholder="e.g. 2" /></div>
-        <div class="field"><label>Lines</label><input type="number" id="log-sabaq-lines" min="0" max="15" placeholder="e.g. 5" /></div>
+      <div id="sabaq-preview" style="display:none;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:7px;padding:8px 12px;font-size:12px;color:#047857;margin-bottom:14px"></div>
+      <div class="field">
+        <label>Lines (optional override)</label>
+        <input type="number" id="log-sabaq-lines" min="0" max="15" placeholder="e.g. 5" />
       </div>
       <div class="field"><label>Result</label>
         <div class="quality-row">
@@ -425,6 +445,13 @@
         <label>Juz Known (baseline)</label>
         <input type="number" id="edit-student-juz" min="0" max="30" placeholder="e.g. 3" />
         <div class="hint">This is the starting baseline. Progress from logs is calculated on top of this.</div>
+      </div>
+      <div class="field">
+        <label>Mushaf Type</label>
+        <select id="edit-student-mushaf">
+          <option value="madani">Madani (Saudi / Hafs — 604 pages)</option>
+          <option value="indopak">Indo-Pak (15 line — 558 pages)</option>
+        </select>
       </div>
       <div class="field">
         <label>Linked Parent Account</label>
@@ -777,6 +804,7 @@
       document.querySelectorAll('.error-box').forEach(el => el.style.display = 'none');
       ['new-student-name','new-student-juz','log-sabaq-surah','log-sabaq-ayah-start','log-sabaq-ayah-end','log-sabaq-juz','log-sabaq-pages','log-sabaq-lines','log-sabqi-juz','log-sabqi-pages','log-manzil-count','log-manzil-juz','log-notes','new-parent-name','new-parent-email','cancel-confirm','cp-new-password','cp-new-password2','edit-student-name','edit-student-juz'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
       document.getElementById('new-student-parent').value = '';
+      if (document.getElementById('new-student-mushaf')) document.getElementById('new-student-mushaf').value = 'madani';
       Object.keys(qualityState).forEach(k => qualityState[k] = null);
       manzilFraction = null;
       document.querySelectorAll('.quality-btn').forEach(b => b.className = 'quality-btn');
@@ -853,7 +881,7 @@
       const parentEmail = document.getElementById('new-student-parent').value;
       const errEl = document.getElementById('add-student-error');
       if (!name) { errEl.textContent = 'Please enter a student name.'; errEl.style.display = 'block'; return; }
-      const payload = { name, juz_target: juzVal !== '' ? parseInt(juzVal) : 0, parent_email: parentEmail || null };
+      const payload = { name, juz_target: juzVal !== '' ? parseInt(juzVal) : 0, parent_email: parentEmail || null, mushaf_type: document.getElementById('new-student-mushaf').value || 'madani' };
       if (currentUser.org_id) payload.org_id = currentUser.org_id;
       const { error } = await db.from('students').insert(payload);
       if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
@@ -875,7 +903,14 @@
         sabaq_ayah_start: parseInt(document.getElementById('log-sabaq-ayah-start').value) || null,
         sabaq_ayah_end: parseInt(document.getElementById('log-sabaq-ayah-end').value) || null,
         sabaq_juz: parseInt(document.getElementById('log-sabaq-juz').value) || null,
-        sabaq_pages: parseInt(document.getElementById('log-sabaq-pages').value) || null,
+        sabaq_pages: (() => {
+          const surah = parseInt(document.getElementById('log-sabaq-surah').value);
+          const ayahStart = parseInt(document.getElementById('log-sabaq-ayah-start').value);
+          const ayahEnd = parseInt(document.getElementById('log-sabaq-ayah-end').value);
+          const student = students.find(s => s.id === studentId);
+          const mushafType = student?.mushaf_type || 'madani';
+          return calcSabaqPages(surah, ayahStart, ayahEnd, mushafType);
+        })(),
         sabaq_lines: parseInt(document.getElementById('log-sabaq-lines').value) || null,
         sabaq_quality: sabaqFailed ? null : qualityState.sabaq,
         sabaq_failed: sabaqFailed,
@@ -926,6 +961,7 @@
       document.getElementById('edit-student-id').value = s.id;
       document.getElementById('edit-student-name').value = s.name;
       document.getElementById('edit-student-juz').value = s.juz_target ?? '';
+      document.getElementById('edit-student-mushaf').value = s.mushaf_type || 'madani';
 
       // Populate parent dropdown
       const sel = document.getElementById('edit-student-parent');
@@ -949,6 +985,7 @@
         name,
         juz_target: juz !== '' ? parseInt(juz) : 0,
         parent_email: parentEmail || null,
+        mushaf_type: document.getElementById('edit-student-mushaf').value || 'madani',
       }).eq('id', id);
 
       if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
@@ -987,6 +1024,57 @@
     document.querySelectorAll('.modal-overlay').forEach(el => {
       el.addEventListener('click', e => { if (e.target === el) closeModals(); });
     });
+
+    // ── MUSHAF PAGE DATA ─────────────────────────────────────────
+    const MADANI_SURAH_PAGES = [1,2,50,77,106,128,151,177,187,208,221,235,249,255,262,267,272,277,282,287,293,295,300,305,306,308,312,315,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,340,342,344,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381,382,383,384,385,386,387,388,389,390,391,392,393,394,395,396,397,398,399,400,401,402,403,404,405,406,407,408,409,410,411,412,413,414];
+    const INDOPAK_SURAH_PAGES = [1,1,44,68,93,112,132,155,163,181,192,204,216,221,227,231,235,239,243,247,252,254,258,262,263,265,268,271,272,273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,296,297,299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,319,320,321,322,323,324,325,326,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,370,371,372,373,374,375,376,377,378,379,380,381];
+    const AYAH_COUNT = [7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,45,33,27,26,30,20,15,21,11,8,8,19,5,8,8,11,11,8,3,9,5,4,7,3,6,3,5,4,5,6];
+    const SURAH_NAMES = ['Al-Fatihah','Al-Baqarah','Ali Imran','An-Nisa','Al-Maidah','Al-Anam','Al-Araf','Al-Anfal','At-Tawbah','Yunus','Hud','Yusuf','Ar-Rad','Ibrahim','Al-Hijr','An-Nahl','Al-Isra','Al-Kahf','Maryam','Ta-Ha','Al-Anbiya','Al-Hajj','Al-Muminun','An-Nur','Al-Furqan','Ash-Shuara','An-Naml','Al-Qasas','Al-Ankabut','Ar-Rum','Luqman','As-Sajdah','Al-Ahzab','Saba','Fatir','Ya-Sin','As-Saffat','Sad','Az-Zumar','Ghafir','Fussilat','Ash-Shura','Az-Zukhruf','Ad-Dukhan','Al-Jathiyah','Al-Ahqaf','Muhammad','Al-Fath','Al-Hujurat','Qaf','Adh-Dhariyat','At-Tur','An-Najm','Al-Qamar','Ar-Rahman','Al-Waqiah','Al-Hadid','Al-Mujadila','Al-Hashr','Al-Mumtahanah','As-Saf','Al-Jumuah','Al-Munafiqun','At-Taghabun','At-Talaq','At-Tahrim','Al-Mulk','Al-Qalam','Al-Haqqah','Al-Maarij','Nuh','Al-Jinn','Al-Muzzammil','Al-Muddaththir','Al-Qiyamah','Al-Insan','Al-Mursalat','An-Naba','An-Naziat','Abasa','At-Takwir','Al-Infitar','Al-Mutaffifin','Al-Inshiqaq','Al-Buruj','At-Tariq','Al-Ala','Al-Ghashiyah','Al-Fajr','Al-Balad','Ash-Shams','Al-Layl','Ad-Duha','Ash-Sharh','At-Tin','Al-Alaq','Al-Qadr','Al-Bayyinah','Az-Zalzalah','Al-Adiyat','Al-Qariah','At-Takathur','Al-Asr','Al-Humazah','Al-Fil','Quraysh','Al-Maun','Al-Kawthar','Al-Kafirun','An-Nasr','Al-Masad','Al-Ikhlas','Al-Falaq','An-Nas'];
+
+    function getPageForAyah(surah, ayah, mushafType) {
+      if (!surah || surah < 1 || surah > 114) return null;
+      const pages = mushafType === 'madani' ? MADANI_SURAH_PAGES : INDOPAK_SURAH_PAGES;
+      const maxPage = mushafType === 'madani' ? 604 : 558;
+      const surahStart = pages[surah - 1];
+      const totalAyahs = AYAH_COUNT[surah - 1];
+      const nextSurahPage = surah < 114 ? pages[surah] : maxPage + 1;
+      const pagesForSurah = nextSurahPage - surahStart;
+      const ayahFraction = Math.min((ayah - 1) / totalAyahs, 1);
+      return surahStart + Math.floor(ayahFraction * pagesForSurah);
+    }
+
+    function calcSabaqPages(surah, ayahStart, ayahEnd, mushafType) {
+      if (!surah || !ayahStart || !ayahEnd) return null;
+      const p1 = getPageForAyah(surah, ayahStart, mushafType);
+      const p2 = getPageForAyah(surah, ayahEnd, mushafType);
+      if (p1 === null || p2 === null) return null;
+      return Math.max(p2 - p1 + 1, 1);
+    }
+
+    function updateSabaqPreview() {
+      const surah = parseInt(document.getElementById('log-sabaq-surah').value);
+      const ayahStart = parseInt(document.getElementById('log-sabaq-ayah-start').value);
+      const ayahEnd = parseInt(document.getElementById('log-sabaq-ayah-end').value);
+      const preview = document.getElementById('sabaq-preview');
+
+      if (!surah || !ayahStart || !ayahEnd) { preview.style.display = 'none'; return; }
+
+      // Get mushaf type from selected student
+      const studentId = parseInt(document.getElementById('log-student-select').value);
+      const student = students.find(s => s.id === studentId);
+      const mushafType = student?.mushaf_type || 'madani';
+
+      const pages = calcSabaqPages(surah, ayahStart, ayahEnd, mushafType);
+      const surahName = SURAH_NAMES[surah - 1] || `Surah ${surah}`;
+
+      if (pages !== null) {
+        preview.style.display = 'block';
+        preview.textContent = `${surahName} ${ayahStart}–${ayahEnd} · ~${pages} page${pages !== 1 ? 's' : ''} (${mushafType === 'madani' ? 'Madani' : 'Indo-Pak'} mushaf)`;
+      } else {
+        preview.style.display = 'none';
+      }
+    }
+    // ─────────────────────────────────────────────────────────────
 
     init();
   </script>
