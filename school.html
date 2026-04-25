@@ -307,30 +307,9 @@
         <input type="date" id="log-date" />
       </div>
       <div class="section-divider">Sabaq (New Lesson)</div>
-      <div class="field-row">
-        <div class="field">
-          <label>Surah #</label>
-          <input type="number" id="log-sabaq-surah" min="1" max="114" placeholder="e.g. 2" oninput="updateSabaqPreview()" />
-        </div>
-        <div class="field">
-          <label>Juz #</label>
-          <input type="number" id="log-sabaq-juz" min="1" max="30" placeholder="e.g. 5" />
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label>Ayah From</label>
-          <input type="number" id="log-sabaq-ayah-start" min="1" placeholder="e.g. 1" oninput="updateSabaqPreview()" />
-        </div>
-        <div class="field">
-          <label>Ayah To</label>
-          <input type="number" id="log-sabaq-ayah-end" min="1" placeholder="e.g. 10" oninput="updateSabaqPreview()" />
-        </div>
-      </div>
-      <div id="sabaq-preview" style="display:none;background:#f0fdf4;border:1px solid #6ee7b7;border-radius:7px;padding:8px 12px;font-size:12px;color:#047857;margin-bottom:14px"></div>
       <div class="field">
-        <label>Lines (optional override)</label>
-        <input type="number" id="log-sabaq-lines" min="0" max="15" placeholder="e.g. 5" />
+        <label>New Lines</label>
+        <input type="number" id="log-sabaq-lines" min="0" placeholder="e.g. 10" />
       </div>
       <div class="field"><label>Result</label>
         <div class="quality-row">
@@ -684,11 +663,7 @@
       el.innerHTML = logs.map(l => {
         const dateStr = new Date(l.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         const sabaqStr = [
-          l.sabaq_surah ? `S.${l.sabaq_surah}` : '',
-          l.sabaq_ayah_start && l.sabaq_ayah_end ? `${l.sabaq_ayah_start}–${l.sabaq_ayah_end}` : '',
-          l.sabaq_juz ? `Juz ${l.sabaq_juz}` : '',
-          l.sabaq_pages ? `${l.sabaq_pages}p` : '',
-          l.sabaq_lines ? `${l.sabaq_lines}L` : ''
+          l.sabaq_lines ? `${l.sabaq_lines} lines` : ''
         ].filter(Boolean).join(' · ') || '—';
         const sabqiStr = l.sabqi_pages ? `${l.sabqi_pages}p` : (l.sabqi_juz || '—');
         const manzilStr = [
@@ -802,7 +777,7 @@
     function closeModals() {
       document.querySelectorAll('.modal-overlay').forEach(el => el.style.display = 'none');
       document.querySelectorAll('.error-box').forEach(el => el.style.display = 'none');
-      ['new-student-name','new-student-juz','log-sabaq-surah','log-sabaq-ayah-start','log-sabaq-ayah-end','log-sabaq-juz','log-sabaq-pages','log-sabaq-lines','log-sabqi-juz','log-sabqi-pages','log-manzil-count','log-manzil-juz','log-notes','new-parent-name','new-parent-email','cancel-confirm','cp-new-password','cp-new-password2','edit-student-name','edit-student-juz'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+      ['new-student-name','new-student-juz','log-sabaq-lines','log-sabqi-juz','log-sabqi-pages','log-manzil-count','log-manzil-juz','log-notes','new-parent-name','new-parent-email','cancel-confirm','cp-new-password','cp-new-password2','edit-student-name','edit-student-juz'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
       document.getElementById('new-student-parent').value = '';
       if (document.getElementById('new-student-mushaf')) document.getElementById('new-student-mushaf').value = 'madani';
       Object.keys(qualityState).forEach(k => qualityState[k] = null);
@@ -899,19 +874,8 @@
 
       const { error } = await db.from('progress_logs').insert({
         student_id: studentId, date,
-        sabaq_surah: parseInt(document.getElementById('log-sabaq-surah').value) || null,
-        sabaq_ayah_start: parseInt(document.getElementById('log-sabaq-ayah-start').value) || null,
-        sabaq_ayah_end: parseInt(document.getElementById('log-sabaq-ayah-end').value) || null,
-        sabaq_juz: parseInt(document.getElementById('log-sabaq-juz').value) || null,
-        sabaq_pages: (() => {
-          const surah = parseInt(document.getElementById('log-sabaq-surah').value);
-          const ayahStart = parseInt(document.getElementById('log-sabaq-ayah-start').value);
-          const ayahEnd = parseInt(document.getElementById('log-sabaq-ayah-end').value);
-          const student = students.find(s => s.id === studentId);
-          const mushafType = student?.mushaf_type || 'madani';
-          return calcSabaqPages(surah, ayahStart, ayahEnd, mushafType);
-        })(),
         sabaq_lines: parseInt(document.getElementById('log-sabaq-lines').value) || null,
+        sabaq_failed: qualityState.sabaq === 'Failed',
         sabaq_quality: sabaqFailed ? null : qualityState.sabaq,
         sabaq_failed: sabaqFailed,
         sabqi_juz: document.getElementById('log-sabqi-juz').value.trim() || null,
