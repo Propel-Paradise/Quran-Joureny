@@ -361,7 +361,6 @@
           <div class="quality-btn" onclick="setQuality('behavior','Excellent')" id="bh-excellent">Excellent</div>
           <div class="quality-btn" onclick="setQuality('behavior','Good')" id="bh-good">Good</div>
           <div class="quality-btn" onclick="setQuality('behavior','Needs Work')" id="bh-needs">Needs Work</div>
-          <div class="quality-btn" onclick="setQuality('behavior','Failed')" id="bh-failed">Failed</div>
         </div>
       </div>
       <div class="field"><label>Teacher's Notes (optional)</label><textarea id="log-notes" placeholder="Any observations, focus areas, or comments for the parent…"></textarea></div>
@@ -865,7 +864,7 @@
         manzil_pages: parseInt(document.getElementById('log-manzil-count').value) || null,
         manzil_quality: qualityState.manzil === 'Failed' ? null : qualityState.manzil,
         manzil_failed: qualityState.manzil === 'Failed',
-        behavior: qualityState.behavior === 'Failed' ? null : qualityState.behavior,
+        behavior: qualityState.behavior,
         teacher_notes: document.getElementById('log-notes').value.trim() || null,
       });
       if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
