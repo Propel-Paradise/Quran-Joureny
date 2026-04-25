@@ -50,7 +50,7 @@
     .student-select:focus { border-color: #047857; }
 
     .stats-row {
-      display: grid; grid-template-columns: repeat(4, 1fr);
+      display: grid; grid-template-columns: repeat(3, 1fr);
       border-bottom: 1px solid #eceae5; background: #fff;
     }
     .stat-cell { padding: 14px 18px; border-right: 1px solid #eceae5; }
@@ -295,14 +295,7 @@
 
       // Stats
       document.getElementById('stat-sessions').textContent = allLogs.length;
-      // Calculate juz from logs (same logic as school side — only non-failed sabaq counts)
-      const PAGES_PER_JUZ = 20;
-      const baseJuz = student.juz_target ?? 0;
-      const earnedPages = allLogs
-        .filter(l => !l.sabaq_failed && l.sabaq_quality !== 'Failed')
-        .reduce((sum, l) => sum + (l.sabaq_pages || 0), 0);
-      const currentJuz = Math.min(baseJuz + Math.floor(earnedPages / PAGES_PER_JUZ), 30);
-      document.getElementById('stat-juz').textContent = currentJuz;
+
 
       if (allLogs.length > 0) {
         const last = allLogs[0];
@@ -351,7 +344,7 @@
         const sabaqQ = sabaqFailed ? `<span class="pill pill-danger">Failed</span>` : qualityPill(l.sabaq_quality);
 
         const sabqiFailed = l.sabqi_failed || l.sabqi_quality === 'Failed';
-        const sabqiVal = [l.sabqi_juz, l.sabqi_pages ? `${l.sabqi_pages}p` : ''].filter(Boolean).join(' · ') || '—';
+        const sabqiVal = [l.sabqi_juz ? `Juz${l.sabqi_juz}` : '', l.sabqi_pages ? `${l.sabqi_pages}p` : ''].filter(Boolean).join('.') || '—';
         const sabqiQ = sabqiFailed ? `<span class="pill pill-danger">Failed</span>` : qualityPill(l.sabqi_quality);
 
         const manzilFailed = l.manzil_failed || l.manzil_quality === 'Failed';
@@ -407,7 +400,7 @@
     }
 
     function resetStats() {
-      ['stat-sessions','stat-juz','stat-last','stat-behavior'].forEach(id => {
+      ['stat-sessions','stat-last','stat-behavior'].forEach(id => {
         document.getElementById(id).textContent = '—';
       });
       document.getElementById('stat-last-sub').textContent = '—';
