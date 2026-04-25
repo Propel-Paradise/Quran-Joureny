@@ -143,20 +143,6 @@
     </div>
   </div>
 
-  <!-- REACTIVATE MODAL -->
-  <div class="modal-overlay" id="reactivate-modal" style="display:none">
-    <div class="modal">
-      <h2>Reactivate Organization</h2>
-      <p class="sub" id="reactivate-sub"></p>
-      <div id="reactivate-error" class="error-box" style="display:none"></div>
-      <div id="reactivate-success" class="success-box" style="display:none"></div>
-      <div class="modal-actions">
-        <button class="icon-btn" onclick="closeModals()">Cancel</button>
-        <button class="btn-admin" style="width:auto;padding:7px 14px" id="reactivate-btn" onclick="confirmReactivate()">Reactivate</button>
-      </div>
-    </div>
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = 'https://fdibhjmbabdcphldnvmq.supabase.co';
@@ -164,8 +150,8 @@
     const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // ── ADMIN CREDENTIALS (change these) ──────────────────────────
-    const ADMIN_EMAIL = 'muhammadkhamd786@gmail.com';
-    const ADMIN_PASSWORD_HASH = 'Bismillah786!'; // Change this to something strong
+    const ADMIN_EMAIL = 'admin@quranjourney.app';
+    const ADMIN_PASSWORD_HASH = 'qj_admin_2026_secure'; // Change this to something strong
     // ─────────────────────────────────────────────────────────────
 
     let orgs = [];
@@ -238,7 +224,7 @@
           : '<span class="pill pill-cancelled">Inactive</span>';
         const actionBtn = o.is_active
           ? `<button class="icon-btn icon-btn-danger" onclick="openDeactivate(${o.id},'${o.name.replace(/'/g,"\\'")}')">Deactivate</button>`
-          : `<button class="icon-btn" style="color:#047857;border-color:#6ee7b7" onclick="openReactivate(${o.id},'${o.name.replace(/'/g,"\\'")}')">Reactivate</button>`;
+          : `<button class="icon-btn" style="color:#047857;border-color:#6ee7b7" onclick="sendToReactivate('${o.email.replace(/'/g,"\\'")}')">Send Reactivate Link</button>`;
 
         return `
           <div class="table-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr 120px">
@@ -250,6 +236,17 @@
             <div style="text-align:right">${actionBtn}</div>
           </div>`;
       }).join('');
+    }
+
+    function sendToReactivate(email) {
+      const url = `https://propel-paradise.github.io/Quran-Journey/reactivate.html?email=${encodeURIComponent(email)}`;
+      // Copy link to clipboard and show confirmation
+      navigator.clipboard.writeText(url).then(() => {
+        alert(`Reactivation link copied to clipboard!\n\nSend this to the organization:\n${url}`);
+      }).catch(() => {
+        // Fallback if clipboard fails
+        prompt('Copy this reactivation link and send it to the organization:', url);
+      });
     }
 
     function openDeactivate(orgId, orgName) {
