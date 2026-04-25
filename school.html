@@ -938,7 +938,6 @@
       const { error } = await db.from('students').update({
         name,
         parent_email: parentEmail || null,
-        mushaf_type: document.getElementById('edit-student-mushaf').value || 'madani',
       }).eq('id', id);
 
       if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
