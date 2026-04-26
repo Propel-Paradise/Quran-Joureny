@@ -514,7 +514,7 @@ async function init(){
   document.getElementById('sidebar-email').textContent=session.user.email;
   document.getElementById('settings-email').textContent=session.user.email;
   document.getElementById('topbar-org').textContent=u.name;
-  document.getElementById('log-date').value=new Date().toISOString().split('T')[0];
+  const _ld=new Date();document.getElementById('log-date').value=`${_ld.getFullYear()}-${String(_ld.getMonth()+1).padStart(2,'0')}-${String(_ld.getDate()).padStart(2,'0')}`;
   document.getElementById('stat-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
   if(u.org_id){
     const{data:org}=await db.from('organizations').select('*').eq('id',u.org_id).single();
@@ -576,7 +576,7 @@ function renderStudents(){
   if(filtered.length===0){el.innerHTML=students.length===0?`<div class="empty-state"><div class="big">📚</div>No students yet. Add your first student to get started.</div>`:`<div class="empty-state"><div class="big">🔍</div>No students match "${search}".</div>`;return;}
   el.innerHTML=filtered.map(s=>{
     const lastLog=logs.find(l=>l.student_id===s.id);
-    const lastDate=lastLog?new Date(lastLog.date).toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—';
+    const lastDate=lastLog?new Date(lastLog.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—';
     const linked=parents.find(p=>p.email===s.parent_email);
     const parentLabel=linked?linked.name:'<span style="color:#737773;font-size:11px">No parent</span>';
     const lastQ=lastLog?(lastLog.sabaq_quality||''):'';
@@ -608,9 +608,9 @@ function renderLogs(){
   const sortedNames=Object.keys(grouped).sort();
   el.innerHTML=sortedNames.map((name,idx)=>{
     const sLogs=grouped[name];const latest=sLogs[0];
-    const latestDate=new Date(latest.date).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    const latestDate=new Date(latest.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
     const rows=sLogs.map(l=>{
-      const dateStr=new Date(l.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      const dateStr=new Date(l.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
       const sabaqStr=l.sabaq_lines?`${l.sabaq_lines} lines`:'—';
       const sabqiStr=[l.sabqi_juz?`Juz ${l.sabqi_juz}`:null,l.sabqi_pages?`${l.sabqi_pages}p`:null].filter(Boolean).join(' · ')||'—';
       const manzilStr=[l.manzil_pages!=null?`${l.manzil_pages}${l.manzil_fraction?' '+l.manzil_fraction:''} Juz`:(l.manzil_fraction?l.manzil_fraction+' Juz':null),l.manzil_juz].filter(Boolean).join(' · ')||'—';
@@ -696,7 +696,7 @@ async function viewStudentLogs(studentId,studentName){
   const sLogs=data||[];
   if(sLogs.length===0){document.getElementById('student-logs-content').innerHTML='<div class="empty-state"><div class="big">📝</div>No logs yet for this student.</div>';return;}
   document.getElementById('student-logs-content').innerHTML=sLogs.map(l=>{
-    const dateStr=new Date(l.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+    const dateStr=new Date(l.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
     const sabaqStr=l.sabaq_lines?`${l.sabaq_lines} lines`:'—';
     const sabqiStr=[l.sabqi_juz?`Juz ${l.sabqi_juz}`:null,l.sabqi_pages?`${l.sabqi_pages}p`:null].filter(Boolean).join(' · ')||'—';
     const manzilStr=[l.manzil_pages!=null?`${l.manzil_pages}${l.manzil_fraction?' '+l.manzil_fraction:''} Juz`:(l.manzil_fraction?l.manzil_fraction+' Juz':null),l.manzil_juz].filter(Boolean).join(' · ')||'—';
