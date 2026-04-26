@@ -612,8 +612,8 @@ function renderLogs(){
     const rows=sLogs.map(l=>{
       const dateStr=new Date(l.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
       const sabaqStr=l.sabaq_lines?`${l.sabaq_lines} lines`:'—';
-      const sabqiStr=[l.sabqi_juz?`Juz${l.sabqi_juz}`:null,l.sabqi_pages?`${l.sabqi_pages}p`:null].filter(Boolean).join('.')||'—';
-      const manzilStr=[l.manzil_pages!=null?`${l.manzil_pages}${l.manzil_fraction||''}Juz`:(l.manzil_fraction?l.manzil_fraction+'Juz':null),l.manzil_juz].filter(Boolean).join(' · ')||'—';
+      const sabqiStr=[l.sabqi_juz?`Juz ${l.sabqi_juz}`:null,l.sabqi_pages?`${l.sabqi_pages}p`:null].filter(Boolean).join(' · ')||'—';
+      const manzilStr=[l.manzil_pages!=null?`${l.manzil_pages}${l.manzil_fraction?' '+l.manzil_fraction:''} Juz`:(l.manzil_fraction?l.manzil_fraction+' Juz':null),l.manzil_juz].filter(Boolean).join(' · ')||'—';
       return `<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;padding:10px 16px;border-bottom:1px solid #f4f3ef;font-size:12px">
         <div style="color:#737773;font-family:'IBM Plex Mono',monospace;font-size:11px">${dateStr}</div>
         <div>${sabaqStr} ${l.sabaq_failed?pill('danger','Failed'):qpill(l.sabaq_quality)}</div>
@@ -698,8 +698,8 @@ async function viewStudentLogs(studentId,studentName){
   document.getElementById('student-logs-content').innerHTML=sLogs.map(l=>{
     const dateStr=new Date(l.date).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
     const sabaqStr=l.sabaq_lines?`${l.sabaq_lines} lines`:'—';
-    const sabqiStr=[l.sabqi_juz?`Juz${l.sabqi_juz}`:null,l.sabqi_pages?`${l.sabqi_pages}p`:null].filter(Boolean).join('.')||'—';
-    const manzilStr=[l.manzil_pages!=null?`${l.manzil_pages}${l.manzil_fraction||''}Juz`:(l.manzil_fraction?l.manzil_fraction+'Juz':null),l.manzil_juz].filter(Boolean).join(' · ')||'—';
+    const sabqiStr=[l.sabqi_juz?`Juz ${l.sabqi_juz}`:null,l.sabqi_pages?`${l.sabqi_pages}p`:null].filter(Boolean).join(' · ')||'—';
+    const manzilStr=[l.manzil_pages!=null?`${l.manzil_pages}${l.manzil_fraction?' '+l.manzil_fraction:''} Juz`:(l.manzil_fraction?l.manzil_fraction+' Juz':null),l.manzil_juz].filter(Boolean).join(' · ')||'—';
     return `<div style="padding:14px 0;border-bottom:1px solid #eceae5">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <span style="font-size:12px;font-weight:600">${dateStr}</span>
