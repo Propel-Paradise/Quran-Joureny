@@ -330,7 +330,11 @@ async function loadStudents(){
   const{data}=await db.from('students').select('*').eq('parent_email',currentUser.email).order('name');
   students=data||[];
   const cl=document.getElementById('child-list');
-  if(students.length===0){cl.innerHTML='<div style="font-size:11px;color:#6b716d">No students linked to your account yet</div>';return;}
+  if(students.length===0){
+    cl.innerHTML='<div style="font-size:11px;color:#6b716d;line-height:1.5">No students linked yet.<br>Ask your school to link your account.</div>';
+    document.getElementById('no-student').style.display='flex';
+    return;
+  }
   cl.innerHTML=students.map((s,i)=>`
     <div class="child-row" id="child-row-${s.id}" style="opacity:${i===0?1:0.55}" onclick="selectStudent(${s.id})">
       <div class="child-avatar" style="background:${childColors[i%childColors.length]}">${s.name.split(' ').map(p=>p[0]).join('').slice(0,2)}</div>
@@ -355,7 +359,7 @@ async function selectStudent(id){
   });
 
   // Only show student-content if we're on the progress tab
-  const activeTab = document.querySelector('.nav-item.active')?.id?.replace('nav-','') || 'progress';
+  const activeTab = ['sessions','settings'].find(t => document.getElementById('nav-'+t)?.classList.contains('active')) || 'progress';
   document.getElementById('no-student').style.display = 'none';
   if (activeTab === 'progress') {
     document.getElementById('student-content').style.display = 'block';
@@ -422,7 +426,7 @@ async function selectStudent(id){
   renderLogs(allLogs);
 
   // If sessions tab is active, refresh it too
-  const activeTab = document.querySelector('.nav-item.active')?.id?.replace('nav-','') || 'progress';
+  const activeTab = ['sessions','settings'].find(t => document.getElementById('nav-'+t)?.classList.contains('active')) || 'progress';
   if (activeTab === 'sessions') renderSessionsTab();
   else if (activeTab === 'settings') loadSettingsTab();
 }
