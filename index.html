@@ -9,76 +9,73 @@
   <link rel="stylesheet" href="style.css">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; font-family: 'IBM Plex Sans', sans-serif; background: #fafaf9; color: #0f1411; }
+    html, body { height: 100%; font-family: 'IBM Plex Sans', sans-serif; background: #0b0f0d; color: #e7e5e0; }
 
-    body {
-      display: flex; align-items: center; justify-content: center;
-      min-height: 100vh; padding: 24px;
-      background-image: radial-gradient(circle at 20% 50%, #ecfdf5 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, #f0fdf4 0%, transparent 40%);
-    }
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; }
 
     .card {
       width: 100%; max-width: 380px;
-      background: #fff; border: 1px solid #eceae5;
+      background: #111814;
+      border: 1px solid #1f2622;
       border-radius: 12px; padding: 32px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.4);
     }
 
     .logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
     .logo-mark {
       width: 30px; height: 30px; border-radius: 7px;
-      background: #0f1411; color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'IBM Plex Mono', monospace; font-size: 16px; font-weight: 700;
+      background: linear-gradient(135deg, #10b981, #047857);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 700;
     }
-    .logo-name { font-size: 18px; font-weight: 600; letter-spacing: -0.4px; }
-    .logo-version { margin-left: auto; font-size: 11px; color: #737773; font-family: 'IBM Plex Mono', monospace; }
+    .logo-name { font-size: 15px; font-weight: 600; color: #fff; }
+    .logo-version { margin-left: auto; font-size: 10px; color: #6b716d; font-family: 'IBM Plex Mono', monospace; background: #1c2421; padding: 2px 8px; border-radius: 10px; }
 
-    h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.4px; margin-bottom: 4px; }
-    .subtitle { font-size: 12px; color: #737773; margin-bottom: 24px; }
+    h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.4px; margin-bottom: 4px; color: #fff; }
+    .subtitle { font-size: 12px; color: #9aa19d; margin-bottom: 24px; line-height: 1.5; }
 
-    .role-label { font-size: 10.5px; color: #737773; letter-spacing: 0.4px; text-transform: uppercase; font-weight: 500; margin-bottom: 6px; }
+    .role-label { font-size: 10.5px; color: #6b716d; letter-spacing: 0.4px; text-transform: uppercase; font-weight: 500; margin-bottom: 6px; }
     .role-toggle {
       display: flex; padding: 3px; border-radius: 8px;
-      background: #f4f3ef; border: 1px solid #eceae5; margin-bottom: 20px;
+      background: #0b0f0d; border: 1px solid #1c211e; margin-bottom: 20px;
     }
     .role-btn {
       flex: 1; padding: 7px 0; border-radius: 5px; border: none;
       font-size: 12px; font-family: 'IBM Plex Sans', sans-serif; font-weight: 500;
-      cursor: pointer; text-transform: capitalize; transition: all 0.15s;
-      background: transparent; color: #737773;
+      cursor: pointer; transition: all 0.15s;
+      background: transparent; color: #6b716d;
     }
-    .role-btn.active { background: #fff; color: #0f1411; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .role-btn.active { background: #1c2421; color: #fff; border: 1px solid #2a322d; }
 
     .field { margin-bottom: 14px; }
     .field label {
-      display: block; font-size: 10.5px; color: #737773;
+      display: block; font-size: 10.5px; color: #9aa19d;
       letter-spacing: 0.4px; text-transform: uppercase; font-weight: 500; margin-bottom: 6px;
     }
     .field input {
       width: 100%; padding: 9px 12px; border-radius: 7px;
-      border: 1px solid #e3e0da; background: #fff;
+      border: 1px solid #1c211e; background: #141a17;
       font-size: 13px; font-family: 'IBM Plex Sans', sans-serif;
-      outline: none; transition: border-color 0.15s;
+      outline: none; transition: border-color 0.15s; color: #e7e5e0;
     }
-    .field input:focus { border-color: #047857; }
+    .field input::placeholder { color: #4a5050; }
+    .field input:focus { border-color: #10b981; }
 
     .btn-primary {
       width: 100%; padding: 10px; border-radius: 7px; border: none;
-      background: #0f1411; color: #fff; font-size: 13px;
+      background: #10b981; color: #062e22; font-size: 13px;
       font-family: 'IBM Plex Sans', sans-serif; font-weight: 600;
       cursor: pointer; transition: opacity 0.15s; margin-top: 4px;
     }
-    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:hover { opacity: 0.9; }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .error {
-      background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c;
+      background: #1f1010; border: 1px solid #3d1515; color: #f87171;
       border-radius: 7px; padding: 9px 12px; font-size: 12px; margin-bottom: 14px;
     }
     .success {
-      background: #ecfdf5; border: 1px solid #6ee7b7; color: #047857;
+      background: #0a1f18; border: 1px solid #14523f; color: #34d399;
       border-radius: 7px; padding: 9px 12px; font-size: 12px; margin-bottom: 14px;
     }
 
@@ -87,10 +84,10 @@
       margin-top: 16px;
     }
     .footer-links a {
-      font-size: 11.5px; color: #737773; text-decoration: none;
+      font-size: 11.5px; color: #6b716d; text-decoration: none;
       transition: color 0.15s;
     }
-    .footer-links a:hover { color: #047857; }
+    .footer-links a:hover { color: #10b981; }
 
     #forgot-panel { display: none; }
     #login-panel { display: block; }
@@ -135,7 +132,7 @@
         <a href="join.html" id="footer-join-link" style="display:none">Join school</a>
       </div>
       <div id="cancel-redirect" style="display:none;margin-top:12px;text-align:center">
-        <a href="register.html" style="font-size:12px;color:#047857;text-decoration:none;font-weight:500">→ Reactivate your organization</a>
+        <a href="reactivate.html" style="font-size:12px;color:#10b981;text-decoration:none;font-weight:500">→ Reactivate your organization</a>
       </div>
     </div>
 
@@ -143,9 +140,7 @@
     <div id="change-pw-panel">
       <h1>Set your password</h1>
       <p class="subtitle">You're using a temporary password. Please set a new one before continuing.</p>
-
       <div id="changepw-error" class="error" style="display:none;"></div>
-
       <div class="field">
         <label>New Password</label>
         <input type="password" id="new-password" placeholder="Minimum 8 characters" />
@@ -154,7 +149,6 @@
         <label>Confirm Password</label>
         <input type="password" id="new-password2" placeholder="Re-enter password" />
       </div>
-
       <button class="btn-primary" id="changepw-btn" onclick="changePassword()">Set Password & Continue</button>
     </div>
 
@@ -162,17 +156,13 @@
     <div id="forgot-panel">
       <h1>Reset password</h1>
       <p class="subtitle">Enter your email and we'll send a reset link.</p>
-
       <div id="forgot-error" class="error" style="display:none;"></div>
       <div id="forgot-success" class="success" style="display:none;"></div>
-
       <div class="field">
         <label>Email</label>
         <input type="email" id="forgot-email" placeholder="you@gmail.com" />
       </div>
-
       <button class="btn-primary" id="reset-btn" onclick="sendReset()">Send reset link</button>
-
       <div class="footer-links">
         <a href="#" onclick="showLogin(); return false;">← Back to sign in</a>
       </div>
@@ -231,11 +221,17 @@
         return;
       }
 
-      // Verify role matches
-      const dbRole = selectedRole === 'school' ? 'teacher' : 'parent';
-      const { data: userData } = await db
-        .from('users').select('*').eq('email', email).single();
+      const { data: userData } = await db.from('users').select('*').eq('email', email).single();
+      const base = 'https://propel-paradise.github.io/Quran-Journey';
 
+      // Admin bypass
+      if (userData?.role === 'admin') {
+        window.location.href = base + '/admin.html';
+        return;
+      }
+
+      // Verify role matches selection
+      const dbRole = selectedRole === 'school' ? 'teacher' : 'parent';
       if (userData && userData.role !== dbRole) {
         await db.auth.signOut();
         showError(`This account is registered as a ${userData.role === 'teacher' ? 'school' : userData.role}, not a ${selectedRole}.`);
@@ -243,8 +239,6 @@
         btn.textContent = 'Sign in';
         return;
       }
-
-      const base = 'https://propel-paradise.github.io/Quran-Journey';
 
       // Check user is_active
       if (userData && userData.is_active === false) {
@@ -258,13 +252,13 @@
         return;
       }
 
-      // Check if first login (must change password)
+      // Check if first login
       if (userData && userData.must_change_password) {
         window.location.href = base + '/change-password.html';
         return;
       }
 
-      // Check org is_active (only for school accounts)
+      // Check org is_active
       if (userData && userData.org_id && userData.role === 'teacher') {
         const { data: org } = await db.from('organizations').select('is_active, plan').eq('id', userData.org_id).single();
         if (org && org.is_active === false) {
@@ -274,11 +268,7 @@
         }
       }
 
-      if (userData?.role === 'admin') {
-        window.location.href = base + '/admin.html';
-      } else {
-        window.location.href = selectedRole === 'school' ? base + '/school.html' : base + '/parent.html';
-      }
+      window.location.href = selectedRole === 'school' ? base + '/school.html' : base + '/parent.html';
     }
 
     async function changePassword() {
@@ -296,12 +286,11 @@
       const { error } = await db.auth.updateUser({ password: pw });
       if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; btn.disabled = false; btn.textContent = 'Set Password & Continue'; return; }
 
-      // Clear the must_change_password flag
       const { data: { session } } = await db.auth.getSession();
       if (session) {
         await db.from('users').update({ must_change_password: false }).eq('email', session.user.email);
         const { data: userData } = await db.from('users').select('role').eq('email', session.user.email).single();
-        const base = window.location.href.replace('index.html', '').replace(/\/$/, '');
+        const base = 'https://propel-paradise.github.io/Quran-Journey';
         window.location.href = userData?.role === 'teacher' ? base + '/school.html' : base + '/parent.html';
       }
     }
@@ -319,7 +308,6 @@
       errEl.style.display = 'none';
       sucEl.style.display = 'none';
 
-      const base = window.location.href.replace('index.html', '').replace(/\/$/, '');
       const { error } = await db.auth.resetPasswordForEmail(email, {
         redirectTo: 'https://propel-paradise.github.io/Quran-Journey/reset-password.html'
       });
@@ -344,7 +332,6 @@
             } else if (data?.role === 'admin') {
               window.location.href = base + '/admin.html';
             } else {
-              // No valid role or inactive — sign out and stay on login page
               await db.auth.signOut();
             }
           });
