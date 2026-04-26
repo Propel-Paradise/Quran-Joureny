@@ -1,466 +1,555 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quran Journey — Parent</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; font-family: 'IBM Plex Sans', sans-serif; background: #fafaf9; color: #0f1411; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;font-family:'IBM Plex Sans',sans-serif;background:#fafaf9;color:#0f1411;overflow:hidden;}
+    .page{display:flex;height:100vh;}
 
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 20px; border-bottom: 1px solid #eceae5;
-      background: #fff; font-size: 13px; position: sticky; top: 0; z-index: 10;
-    }
-    .topbar-left { display: flex; align-items: center; gap: 14px; }
-    .logo-mark {
-      width: 24px; height: 24px; border-radius: 5px;
-      background: #0f1411; color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 700;
-    }
-    .breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 12px; }
-    .breadcrumb .sep { color: #737773; }
-    .topbar-right { display: flex; align-items: center; gap: 12px; }
-    .avatar {
-      width: 26px; height: 26px; border-radius: 6px;
-      background: #fffbeb; color: #b45309;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 600;
-    }
-    .signout-btn {
-      font-size: 11px; color: #737773; background: none; border: none;
-      cursor: pointer; font-family: 'IBM Plex Sans', sans-serif;
-    }
-    .signout-btn:hover { color: #0f1411; }
+    .sidebar{width:248px;background:#0b0f0d;color:#e7e5e0;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;}
+    .brand-row{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid #1c211e;flex-shrink:0;}
+    .logo-mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#f59e0b,#b45309);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:700;flex-shrink:0;}
+    .brand-name{font-size:13px;font-weight:600;color:#fff;}
+    .brand-sub{font-size:11px;color:#9aa19d;}
 
-    .student-selector {
-      background: #fff; border-bottom: 1px solid #eceae5;
-      padding: 14px 20px; display: flex; align-items: center; gap: 12px;
-      flex-wrap: wrap;
-    }
-    .selector-label { font-size: 11px; color: #737773; font-weight: 500; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; }
-    .student-select {
-      padding: 8px 14px; border-radius: 7px; border: 1px solid #e3e0da;
-      font-size: 13px; font-family: 'IBM Plex Sans', sans-serif;
-      background: #fff; outline: none; cursor: pointer; min-width: 200px;
-    }
-    .student-select:focus { border-color: #047857; }
+    .child-switcher{margin:12px 12px 4px;padding:10px 12px;border-radius:8px;background:#141a17;border:1px solid #1f2622;flex-shrink:0;}
+    .child-label{font-size:10px;color:#6b716d;text-transform:uppercase;letter-spacing:0.4px;font-weight:600;margin-bottom:6px;}
+    .child-row{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;transition:opacity 0.15s;}
+    .child-row:hover{opacity:1!important;}
+    .child-avatar{width:24px;height:24px;border-radius:6px;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;}
+    .child-name{font-size:12.5px;font-weight:500;color:#fff;}
+    .child-meta{font-size:10.5px;color:#9aa19d;}
 
-    .stats-row {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      border-bottom: 1px solid #eceae5; background: #fff;
-    }
-    .stat-cell { padding: 14px 18px; border-right: 1px solid #eceae5; }
-    .stat-cell:last-child { border-right: none; }
-    .stat-label { font-size: 10.5px; color: #737773; letter-spacing: 0.3px; text-transform: uppercase; font-weight: 500; }
-    .stat-value { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; margin-top: 3px; font-variant-numeric: tabular-nums; }
-    .stat-sub { font-size: 11px; color: #737773; margin-top: 1px; }
+    .section-label{font-size:10px;color:#6b716d;text-transform:uppercase;letter-spacing:0.6px;font-weight:600;padding:14px 20px 5px;flex-shrink:0;}
+    .nav-list{display:flex;flex-direction:column;padding:0 8px;gap:1px;}
+    .nav-item{display:flex;align-items:center;gap:11px;padding:8px 12px;border-radius:6px;font-size:13px;font-weight:500;color:#b0b6b1;border-left:2px solid transparent;cursor:pointer;transition:all 0.1s;}
+    .nav-item:hover{color:#fff;background:#141a17;}
+    .nav-item.active{color:#fff;background:#1c2421;border-left-color:#f59e0b;padding-left:10px;}
+    .nav-badge{margin-left:auto;font-size:10px;padding:1px 6px;border-radius:4px;background:#f59e0b22;color:#fbbf24;font-weight:600;}
 
-    .main { padding: 20px; max-width: 960px; }
+    .sidebar-foot{margin-top:auto;padding:12px;border-top:1px solid #1c211e;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+    .profile-avatar{width:30px;height:30px;border-radius:8px;background:#1f2622;color:#fbbf24;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;border:1px solid #2a322d;flex-shrink:0;}
 
-    .card {
-      background: #fff; border-radius: 8px;
-      border: 1px solid #eceae5; margin-bottom: 20px; overflow: hidden;
-    }
-    .card-header {
-      padding: 14px 20px; border-bottom: 1px solid #eceae5;
-      font-size: 11px; font-weight: 600; color: #737773;
-      text-transform: uppercase; letter-spacing: 0.3px;
-    }
+    .workspace{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+    .topbar{display:flex;align-items:center;gap:14px;padding:11px 24px;border-bottom:1px solid #eceae5;background:#fff;flex-shrink:0;}
+    .breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:#737773;}
+    .breadcrumb .active{font-size:13px;font-weight:600;color:#0f1411;}
+    .topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+    .change-pw-btn{font-size:11px;color:#737773;background:none;border:1px solid #e3e0da;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
+    .change-pw-btn:hover{background:#f4f3ef;}
 
-    /* Log rows */
-    .log-block {
-      padding: 16px 20px; border-bottom: 1px solid #eceae5;
-    }
-    .log-block:last-child { border-bottom: none; }
-    .log-header {
-      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
-    }
-    .log-date { font-size: 12px; font-weight: 600; color: #0f1411; }
-    .log-date-sub { font-size: 11px; color: #737773; font-family: 'IBM Plex Mono', monospace; }
+    .hero{background:#fff;border-bottom:1px solid #eceae5;padding:18px 24px;display:flex;align-items:center;gap:16px;flex-shrink:0;}
+    .hero-avatar{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#b45309);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;flex-shrink:0;}
+    .hero-name{font-size:20px;font-weight:600;letter-spacing:-0.5px;}
+    .hero-sub{font-size:12px;color:#737773;margin-top:4px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 
-    .log-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px;
-    }
-    .log-section {
-      background: #fafaf9; border: 1px solid #eceae5; border-radius: 7px; padding: 10px 12px;
-    }
-    .log-section-title {
-      font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px;
-      font-weight: 600; color: #737773; margin-bottom: 6px;
-    }
-    .log-section-val { font-size: 13px; font-weight: 500; }
-    .log-section-sub { font-size: 11px; color: #737773; margin-top: 2px; }
+    .week-strip{display:flex;gap:5px;margin-left:auto;}
+    .day-pill{width:36px;height:40px;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;font-weight:600;gap:1px;flex-shrink:0;}
 
-    .log-notes {
-      font-size: 12px; color: #3a3f3c; background: #fffbeb;
-      border: 1px solid #fef3c7; border-radius: 6px; padding: 8px 12px; margin-top: 8px;
-    }
-    .log-notes-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; color: #b45309; margin-bottom: 3px; }
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #eceae5;background:#fff;flex-shrink:0;}
+    .stat-cell{padding:16px 20px;border-right:1px solid #eceae5;}
+    .stat-cell:last-child{border-right:none;}
+    .stat-label{font-size:11px;color:#737773;letter-spacing:0.3px;text-transform:uppercase;font-weight:500;}
+    .stat-value{font-size:24px;font-weight:600;letter-spacing:-0.5px;margin-top:6px;}
+    .stat-sub{font-size:11px;color:#737773;margin-top:3px;}
 
-    .pill {
-      display: inline-flex; align-items: center;
-      padding: 2px 8px; border-radius: 5px; font-size: 11px; font-weight: 500;
-    }
-    .pill-success { background: #ecfdf5; color: #047857; }
-    .pill-warn { background: #fffbeb; color: #b45309; }
-    .pill-danger { background: #fef2f2; color: #b91c1c; }
+    .content{flex:1;overflow:auto;padding:20px 24px;}
 
-    .log-section-failed { border-color: #fecaca !important; background: #fef2f2 !important; }
-    .pill-danger { background: #fef2f2; color: #b91c1c; }
+    .card{background:#fff;border:1px solid #eceae5;border-radius:10px;overflow:hidden;margin-bottom:20px;}
+    .card-head{padding:13px 18px;border-bottom:1px solid #eceae5;display:flex;align-items:center;justify-content:space-between;}
+    .card-title{font-size:13px;font-weight:600;}
 
-    .empty-state {
-      padding: 40px 20px; text-align: center; color: #737773; font-size: 13px;
-    }
-    .empty-state .big { font-size: 32px; margin-bottom: 8px; }
+    .log-block{padding:16px 18px;border-bottom:1px solid #eceae5;}
+    .log-block:last-child{border-bottom:none;}
+    .log-date{font-size:13px;font-weight:500;margin-bottom:10px;}
+    .log-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;}
+    .log-section{background:#fafaf9;border:1px solid #eceae5;border-radius:6px;padding:8px 10px;}
+    .log-section-failed{background:#fef2f2!important;border-color:#fecaca!important;}
+    .log-section-title{font-size:10px;color:#737773;text-transform:uppercase;letter-spacing:0.4px;font-weight:600;margin-bottom:4px;}
+    .log-section-val{font-size:12px;font-weight:500;}
+    .log-notes{background:#fffbeb;border:1px solid #fef3c7;border-radius:6px;padding:8px 10px;font-size:12px;color:#3a3f3c;line-height:1.5;}
+    .log-notes-label{font-size:10px;color:#b45309;font-weight:600;text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:3px;}
 
-    .no-student { padding: 80px 20px; text-align: center; color: #737773; }
-    .no-student .big { font-size: 40px; margin-bottom: 12px; }
-    .no-student .title { font-size: 16px; font-weight: 600; color: #0f1411; margin-bottom: 6px; }
+    .pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:500;}
+    .pill-success{background:#ecfdf5;color:#047857;}
+    .pill-warn{background:#fffbeb;color:#b45309;}
+    .pill-danger{background:#fef2f2;color:#b91c1c;}
 
-    .loading { padding: 40px; text-align: center; color: #737773; font-size: 13px; }
+    .empty-state{padding:40px;text-align:center;color:#737773;font-size:13px;}
+    .empty-state .big{font-size:36px;margin-bottom:10px;}
+    .no-student{padding:80px 24px;text-align:center;color:#737773;}
+    .no-student .big{font-size:44px;margin-bottom:12px;}
+    .no-student .title{font-size:16px;font-weight:600;color:#0f1411;margin-bottom:6px;}
+    .loading{padding:40px;text-align:center;color:#737773;font-size:13px;}
+
+    /* CP Modal */
+    .modal-overlay{position:fixed;inset:0;background:rgba(11,15,13,0.7);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;backdrop-filter:blur(2px);}
+    .modal{background:#fff;border-radius:10px;padding:28px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+    .modal h2{font-size:17px;font-weight:600;margin-bottom:4px;}
+    .modal .sub{font-size:12px;color:#737773;margin-bottom:20px;}
+    .field{margin-bottom:14px;}
+    .field label{display:block;font-size:10.5px;color:#737773;letter-spacing:0.4px;text-transform:uppercase;font-weight:500;margin-bottom:6px;}
+    .field input{width:100%;padding:9px 12px;border-radius:7px;border:1px solid #e3e0da;background:#fff;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;transition:border-color 0.15s;color:#0f1411;}
+    .field input:focus{border-color:#f59e0b;}
+    .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;}
+    .btn-primary{padding:8px 16px;border-radius:7px;font-size:12px;font-weight:500;background:#0b0f0d;color:#fff;border:none;cursor:pointer;}
+    .btn-secondary{padding:8px 16px;border-radius:7px;font-size:12px;font-weight:500;background:#fff;color:#3a3f3c;border:1px solid #e3e0da;cursor:pointer;}
+    .error-box{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:7px;padding:9px 12px;font-size:12px;margin-bottom:14px;}
+    .success-box{background:#ecfdf5;border:1px solid #6ee7b7;color:#047857;border-radius:7px;padding:9px 12px;font-size:12px;margin-bottom:14px;}
   </style>
 </head>
 <body>
+<div class="page">
 
-  <!-- Topbar -->
-  <div class="topbar">
-    <div class="topbar-left">
+  <aside class="sidebar">
+    <div class="brand-row">
       <div class="logo-mark">Q</div>
-      <div class="breadcrumb">
-        <span style="font-weight:500">Quran Journey</span>
-        <span class="sep">/</span>
-        <span id="parent-name-crumb" style="color:#737773">Parent</span>
-        <span class="sep">/</span>
-        <span>Progress</span>
+      <div style="line-height:1.2">
+        <div class="brand-name">Quran Journey</div>
+        <div class="brand-sub">Parent portal</div>
       </div>
     </div>
-    <div class="topbar-right">
-      <span id="parent-name-display" style="font-size:12px;color:#3a3f3c"></span>
-      <div class="avatar" id="parent-avatar">P</div>
-      <button class="signout-btn" onclick="openParentChangePassword()" style="margin-right:4px">Change PW</button>
-      <button class="signout-btn" onclick="signOut()">Sign out</button>
-    </div>
-  </div>
 
-  <!-- Student selector -->
-  <div class="student-selector">
-    <span class="selector-label">Viewing</span>
-    <select class="student-select" id="student-select" onchange="selectStudent()">
-      <option value="">Select a student…</option>
-    </select>
-    <span id="last-updated" style="font-size:11px;color:#737773;margin-left:auto"></span>
-  </div>
+    <div class="child-switcher">
+      <div class="child-label">Your children</div>
+      <div id="child-list">
+        <div style="font-size:11px;color:#6b716d">Loading…</div>
+      </div>
+    </div>
 
-  <!-- Stats -->
-  <div class="stats-row">
-    <div class="stat-cell">
-      <div class="stat-label">Total Sessions</div>
-      <div class="stat-value" id="stat-sessions">—</div>
-      <div class="stat-sub">logged</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-label">Last Session</div>
-      <div class="stat-value" id="stat-last" style="font-size:16px;margin-top:5px">—</div>
-      <div class="stat-sub" id="stat-last-sub">—</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-label">Behavior This Week</div>
-      <div class="stat-value" id="stat-behavior" style="font-size:16px;margin-top:5px">—</div>
-      <div class="stat-sub">last 7 days</div>
-    </div>
-  </div>
+    <div class="section-label">View</div>
+    <nav class="nav-list">
+      <div class="nav-item active" id="nav-progress" onclick="switchTab('progress',this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        <span>Progress</span>
+      </div>
+      <div class="nav-item" id="nav-sessions" onclick="switchTab('sessions',this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M8 10h8M8 14h8M8 18h5"/></svg>
+        <span>Sessions</span>
+      </div>
+      <div class="nav-item" id="nav-settings" onclick="switchTab('settings',this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06.06A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Settings</span>
+      </div>
+    </nav>
 
-  <!-- Main -->
-  <div class="main">
+    <div class="sidebar-foot">
+      <div class="profile-avatar" id="parent-avatar">P</div>
+      <div style="flex:1;min-width:0;line-height:1.2">
+        <div style="font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="parent-name-display">Parent</div>
+        <div style="font-size:11px;color:#9aa19d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="parent-email-display">—</div>
+      </div>
+      <button onclick="signOut()" style="background:none;border:none;cursor:pointer;padding:4px;color:#9aa19d;display:flex;align-items:center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <div class="workspace">
+    <div class="topbar">
+      <div class="breadcrumb">
+        <span id="topbar-child" style="color:#737773">Student</span>
+        <span style="color:#d4d0ca">/</span>
+      </div>
+      <span class="crumb-active" id="topbar-page">Progress</span>
+      <div class="topbar-right"></div>
+    </div>
+
     <div id="no-student" class="no-student">
       <div class="big">📖</div>
-      <div class="title">Select a student above</div>
-      <div>Choose your child's name to view their Quran progress.</div>
+      <div class="title">Select a student</div>
+      <div>Choose your child's name from the sidebar to view their Quran progress.</div>
     </div>
 
     <div id="student-content" style="display:none">
-      <div class="card">
-        <div class="card-header">Recent Sessions</div>
-        <div id="logs-list"><div class="loading">Loading…</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CHANGE PASSWORD MODAL -->
-  <div class="modal-overlay" id="parent-cp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;z-index:100;padding:20px">
-    <div style="background:#fff;border-radius:10px;padding:28px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.15)">
-      <h2 style="font-size:17px;font-weight:600;margin-bottom:4px">Change Password</h2>
-      <p style="font-size:12px;color:#737773;margin-bottom:20px">Set a new password for your account.</p>
-      <div id="parent-cp-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:7px;padding:9px 12px;font-size:12px;margin-bottom:14px"></div>
-      <div id="parent-cp-success" style="display:none;background:#ecfdf5;border:1px solid #6ee7b7;color:#047857;border-radius:7px;padding:9px 12px;font-size:12px;margin-bottom:14px"></div>
-      <div style="margin-bottom:14px">
-        <label style="display:block;font-size:10.5px;color:#737773;letter-spacing:0.4px;text-transform:uppercase;font-weight:500;margin-bottom:6px">New Password</label>
-        <input type="password" id="parent-cp-pw" placeholder="Minimum 8 characters" style="width:100%;padding:9px 12px;border-radius:7px;border:1px solid #e3e0da;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none" />
-      </div>
-      <div style="margin-bottom:20px">
-        <label style="display:block;font-size:10.5px;color:#737773;letter-spacing:0.4px;text-transform:uppercase;font-weight:500;margin-bottom:6px">Confirm Password</label>
-        <input type="password" id="parent-cp-pw2" placeholder="Re-enter password" style="width:100%;padding:9px 12px;border-radius:7px;border:1px solid #e3e0da;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none" />
-      </div>
-      <div style="display:flex;gap:8px;justify-content:flex-end">
-        <button onclick="closeParentCpModal()" style="padding:7px 14px;border-radius:7px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;font-weight:500;cursor:pointer;background:#fff;color:#3a3f3c;border:1px solid #e3e0da">Cancel</button>
-        <button id="parent-cp-btn" onclick="saveParentPassword()" style="padding:7px 14px;border-radius:7px;font-size:12px;font-family:'IBM Plex Sans',sans-serif;font-weight:600;cursor:pointer;background:#0f1411;color:#fff;border:none">Update Password</button>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const SUPABASE_URL = 'https://fdibhjmbabdcphldnvmq.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_DErpFcOi5m4LMgkVYFP5Kg_6fhVxHqG';
-    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    let currentUser = null;
-    let students = [];
-
-    const redirectBase = () => window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
-
-    async function init() {
-      const { data: { session } } = await db.auth.getSession();
-      if (!session) { window.location.href = redirectBase() + 'index.html'; return; }
-
-      const { data: userData } = await db
-        .from('users').select('*').eq('email', session.user.email).single();
-
-      if (!userData || userData.role !== 'parent') {
-        window.location.href = redirectBase() + 'index.html'; return;
-      }
-
-      // First login — must set a real password before proceeding
-      if (userData.must_change_password) {
-        window.location.href = redirectBase() + 'change-password.html'; return;
-      }
-
-      currentUser = userData;
-      const initials = userData.name.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase();
-      document.getElementById('parent-avatar').textContent = initials;
-      document.getElementById('parent-name-display').textContent = userData.name;
-      document.getElementById('parent-name-crumb').textContent = userData.name;
-
-      await loadStudents();
-    }
-
-    async function loadStudents() {
-      const { data } = await db.from('students')
-        .select('*').eq('parent_email', currentUser.email).order('name');
-      students = data || [];
-
-      const sel = document.getElementById('student-select');
-      if (students.length === 0) {
-        sel.innerHTML = '<option value="">No students linked to your account yet</option>';
-      } else {
-        sel.innerHTML = '<option value="">Select a student…</option>' +
-          students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
-        // Auto-select if only one student
-        if (students.length === 1) {
-          sel.value = students[0].id;
-          selectStudent();
-        }
-      }
-    }
-
-    async function selectStudent() {
-      const id = parseInt(document.getElementById('student-select').value);
-      if (!id) {
-        document.getElementById('no-student').style.display = 'block';
-        document.getElementById('student-content').style.display = 'none';
-        resetStats();
-        return;
-      }
-
-      const student = students.find(s => s.id === id);
-
-      document.getElementById('no-student').style.display = 'none';
-      document.getElementById('student-content').style.display = 'block';
-      document.getElementById('logs-list').innerHTML = '<div class="loading">Loading…</div>';
-
-      const { data: logs } = await db
-        .from('progress_logs').select('*')
-        .eq('student_id', id).order('date', { ascending: false });
-
-      const allLogs = logs || [];
-
-      // Stats
-      document.getElementById('stat-sessions').textContent = allLogs.length;
-
-
-      if (allLogs.length > 0) {
-        const last = allLogs[0];
-        const lastDate = new Date(last.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        document.getElementById('stat-last').textContent = lastDate;
-        const sabaqInfo = last.sabaq_pages ? `${last.sabaq_pages}p sabaq` : 'Session logged';
-        document.getElementById('stat-last-sub').textContent = sabaqInfo;
-        document.getElementById('last-updated').textContent = `Last updated ${lastDate}`;
-      } else {
-        document.getElementById('stat-last').textContent = '—';
-        document.getElementById('stat-last-sub').textContent = 'no logs yet';
-        document.getElementById('last-updated').textContent = '';
-      }
-
-      // Behavior this week
-      const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
-      const weekBehavior = allLogs
-        .filter(l => new Date(l.date) >= weekAgo && l.behavior)
-        .map(l => l.behavior);
-      if (weekBehavior.length > 0) {
-        const scoreMap = { Excellent: 3, Good: 2, 'Needs Work': 1, Failed: 0 };
-        const avg = weekBehavior.reduce((s, b) => s + (scoreMap[b] || 0), 0) / weekBehavior.length;
-        document.getElementById('stat-behavior').textContent = avg >= 2.5 ? 'Excellent' : avg >= 1.5 ? 'Good' : avg >= 0.5 ? 'Needs Work' : 'Failed';
-      } else {
-        document.getElementById('stat-behavior').textContent = '—';
-      }
-
-      // Color the behavior stat
-      const behaviorEl = document.getElementById('stat-behavior');
-      const behaviorVal = behaviorEl.textContent;
-      const colorMap = { 'Excellent': '#047857', 'Good': '#b45309', 'Needs Work': '#b91c1c', 'Failed': '#b91c1c' };
-      behaviorEl.style.color = colorMap[behaviorVal] || '#0f1411';
-
-      renderLogs(allLogs);
-    }
-
-    function renderLogs(logs) {
-      const el = document.getElementById('logs-list');
-      if (logs.length === 0) {
-        el.innerHTML = `<div class="empty-state"><div class="big">📝</div>No progress logged yet. Check back after the next session.</div>`;
-        return;
-      }
-
-      el.innerHTML = logs.map(l => {
-        const dateStr = new Date(l.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-
-        const sabaqFailed = l.sabaq_failed || l.sabaq_quality === 'Failed';
-        const sabaqVal = [
-          l.sabaq_surah ? `Surah ${l.sabaq_surah}` : '',
-          l.sabaq_ayah_start && l.sabaq_ayah_end ? `Ayah ${l.sabaq_ayah_start}–${l.sabaq_ayah_end}` : '',
-          l.sabaq_juz ? `Juz ${l.sabaq_juz}` : '',
-          l.sabaq_pages ? `${l.sabaq_pages} pages` : '',
-          l.sabaq_lines ? `${l.sabaq_lines} lines` : ''
-        ].filter(Boolean).join(' · ') || '—';
-        const sabaqQ = sabaqFailed ? `<span class="pill pill-danger">Failed</span>` : qualityPill(l.sabaq_quality);
-
-        const sabqiFailed = l.sabqi_failed || l.sabqi_quality === 'Failed';
-        const sabqiVal = [l.sabqi_juz ? `Juz${l.sabqi_juz}` : '', l.sabqi_pages ? `${l.sabqi_pages}p` : ''].filter(Boolean).join('.') || '—';
-        const sabqiQ = sabqiFailed ? `<span class="pill pill-danger">Failed</span>` : qualityPill(l.sabqi_quality);
-
-        const manzilFailed = l.manzil_failed || l.manzil_quality === 'Failed';
-        const manzilVal = [
-          l.manzil_pages != null ? `${l.manzil_pages}${l.manzil_fraction || ''} Juz` : (l.manzil_fraction ? l.manzil_fraction + ' Juz' : ''),
-          l.manzil_juz
-        ].filter(Boolean).join(' · ') || '—';
-        const manzilQ = manzilFailed ? `<span class="pill pill-danger">Failed</span>` : qualityPill(l.manzil_quality);
-
-        return `
-          <div class="log-block">
-            <div class="log-header">
-              <div class="log-date">${dateStr}</div>
-            </div>
-            <div class="log-grid" style="grid-template-columns:repeat(4,1fr)">
-              <div class="log-section ${sabaqFailed ? 'log-section-failed' : ''}">
-                <div class="log-section-title">Sabaq</div>
-                <div class="log-section-val">${sabaqVal}</div>
-                <div class="log-section-sub">${sabaqQ}</div>
-              </div>
-              <div class="log-section ${sabqiFailed ? 'log-section-failed' : ''}">
-                <div class="log-section-title">Sabqi</div>
-                <div class="log-section-val">${sabqiVal}</div>
-                <div class="log-section-sub">${sabqiQ}</div>
-              </div>
-              <div class="log-section ${manzilFailed ? 'log-section-failed' : ''}">
-                <div class="log-section-title">Manzil</div>
-                <div class="log-section-val">${manzilVal}</div>
-                <div class="log-section-sub">${manzilQ}</div>
-              </div>
-              <div class="log-section">
-                <div class="log-section-title">Behavior</div>
-                <div class="log-section-val">${l.behavior ? qualityPill(l.behavior) : '<span style="color:#737773;font-size:12px">—</span>'}</div>
-              </div>
-            </div>
-            ${l.teacher_notes ? `
-              <div class="log-notes">
-                <div class="log-notes-label">Teacher's Note</div>
-                ${l.teacher_notes}
-              </div>
-            ` : ''}
+      <div class="hero">
+        <div class="hero-avatar" id="hero-avatar">—</div>
+        <div>
+          <div class="hero-name" id="hero-name">—</div>
+          <div class="hero-sub">
+            <span id="hero-school">—</span>
+            <span id="hero-behavior-pill"></span>
           </div>
-        `;
-      }).join('');
-    }
+        </div>
+        <div class="week-strip" id="week-strip"></div>
+      </div>
 
-    function qualityPill(q) {
-      if (!q) return '';
-      if (q === 'Excellent') return `<span class="pill pill-success">${q}</span>`;
-      if (q === 'Good') return `<span class="pill pill-warn">${q}</span>`;
-      if (q === 'Failed') return `<span class="pill pill-danger" style="font-weight:600">Failed</span>`;
-      return `<span class="pill pill-danger">${q}</span>`;
-    }
+      <div class="stats-row">
+        <div class="stat-cell">
+          <div class="stat-label">Total Sessions</div>
+          <div class="stat-value" id="stat-sessions">—</div>
+          <div class="stat-sub">logged</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Last Session</div>
+          <div class="stat-value" id="stat-last" style="font-size:16px;margin-top:8px">—</div>
+          <div class="stat-sub" id="stat-last-sub">—</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-label">Behavior This Week</div>
+          <div class="stat-value" id="stat-behavior" style="font-size:16px;margin-top:8px">—</div>
+          <div class="stat-sub">last 7 days</div>
+        </div>
+      </div>
 
-    function resetStats() {
-      ['stat-sessions','stat-last','stat-behavior'].forEach(id => {
-        document.getElementById(id).textContent = '—';
-      });
-      document.getElementById('stat-last-sub').textContent = '—';
-      document.getElementById('last-updated').textContent = '';
-    }
+      <div class="content">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Recent Sessions</span>
+            <span id="last-updated" style="font-size:11px;color:#737773"></span>
+          </div>
+          <div id="logs-list"><div class="loading">Loading…</div></div>
+        </div>
+      </div>
+    </div>
 
-    function openParentChangePassword() {
-      document.getElementById('parent-cp-modal').style.display = 'flex';
-      document.getElementById('parent-cp-pw').focus();
-    }
+    <!-- SESSIONS TAB -->
+    <div id="tab-sessions" style="display:none;flex:1;overflow:auto;padding:20px 24px">
+      <div class="section-header">
+        <div class="section-title">All Sessions</div>
+        <span id="sessions-count" style="font-size:12px;color:#737773"></span>
+      </div>
+      <div id="sessions-no-student" class="empty-state" style="display:none">
+        <div class="big">📚</div>Select a child from the sidebar to view their sessions.
+      </div>
+      <div class="table-wrap" id="sessions-table-wrap" style="display:none">
+        <div class="table-head" style="grid-template-columns:1.2fr 1fr 1fr 1fr 1fr">
+          <div>Date</div><div>Sabaq</div><div>Sabqi</div><div>Manzil</div><div>Behavior</div>
+        </div>
+        <div id="sessions-list"><div class="loading">Loading…</div></div>
+      </div>
+    </div>
 
-    function closeParentCpModal() {
-      document.getElementById('parent-cp-modal').style.display = 'none';
-      document.getElementById('parent-cp-pw').value = '';
-      document.getElementById('parent-cp-pw2').value = '';
-      document.getElementById('parent-cp-error').style.display = 'none';
-      document.getElementById('parent-cp-success').style.display = 'none';
-    }
+    <!-- SETTINGS TAB -->
+    <div id="tab-settings" style="display:none;flex:1;overflow:auto;padding:20px 24px">
+      <div class="settings-card">
+        <h3>Account</h3>
+        <p class="desc">Signed in as <span id="settings-email" style="font-weight:500;color:#0f1411"></span></p>
+        <button class="btn-ghost" onclick="openCpModal()">Change Password</button>
+      </div>
+      <div class="settings-card">
+        <h3>Linked Children</h3>
+        <p class="desc">These students are linked to your account. Removing a child only unlinks them — their progress data stays intact.</p>
+        <div id="settings-children-list" style="margin-bottom:14px;font-size:13px;color:#737773">Loading…</div>
+      </div>
+      <div class="settings-card danger">
+        <h3>Delete Account</h3>
+        <p class="desc">Permanently delete your parent account. Your children's progress records will be preserved for the school — only your login access is removed.</p>
+        <button class="btn-danger" onclick="openDeleteAccountModal()">Delete My Account</button>
+      </div>
+    </div>
 
-    async function saveParentPassword() {
-      const pw = document.getElementById('parent-cp-pw').value;
-      const pw2 = document.getElementById('parent-cp-pw2').value;
-      const btn = document.getElementById('parent-cp-btn');
-      const errEl = document.getElementById('parent-cp-error');
-      const sucEl = document.getElementById('parent-cp-success');
+  </div>
+</div>
 
-      if (pw.length < 8) { errEl.textContent = 'Password must be at least 8 characters.'; errEl.style.display = 'block'; return; }
-      if (pw !== pw2) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+<!-- DELETE ACCOUNT MODAL -->
+<div class="modal-overlay" id="delete-account-modal" style="display:none">
+  <div class="modal">
+    <h2>Delete Account</h2>
+    <p class="sub">This will remove your parent login. Your children's progress data stays with the school.</p>
+    <div id="da-error" class="ws-error" style="display:none"></div>
+    <div class="field"><label>Type DELETE to confirm</label><input type="text" id="da-confirm" placeholder="DELETE" /></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeDeleteAccountModal()">Cancel</button>
+      <button class="btn-danger" id="da-btn" onclick="deleteAccount()">Delete My Account</button>
+    </div>
+  </div>
+</div>
 
-      btn.disabled = true; btn.textContent = 'Saving…';
-      errEl.style.display = 'none'; sucEl.style.display = 'none';
+<!-- CHANGE PASSWORD MODAL -->
+<div class="modal-overlay" id="cp-modal" style="display:none">
+  <div class="modal">
+    <h2>Change Password</h2>
+    <p class="sub">Set a new password for your account.</p>
+    <div id="cp-error" class="error-box" style="display:none"></div>
+    <div id="cp-success" class="success-box" style="display:none"></div>
+    <div class="field"><label>New Password</label><input type="password" id="cp-pw" placeholder="Minimum 8 characters" /></div>
+    <div class="field"><label>Confirm Password</label><input type="password" id="cp-pw2" placeholder="Re-enter password" /></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeCpModal()">Cancel</button>
+      <button class="btn-primary" id="cp-btn" onclick="savePassword()">Update Password</button>
+    </div>
+  </div>
+</div>
 
-      const { error } = await db.auth.updateUser({ password: pw });
-      btn.disabled = false; btn.textContent = 'Update Password';
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://fdibhjmbabdcphldnvmq.supabase.co';
+const SUPABASE_KEY='sb_publishable_DErpFcOi5m4LMgkVYFP5Kg_6fhVxHqG';
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const BASE='https://propel-paradise.github.io/Quran-Journey';
 
-      if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; }
-      else {
-        sucEl.textContent = 'Password updated!';
-        sucEl.style.display = 'block';
-        document.getElementById('parent-cp-pw').value = '';
-        document.getElementById('parent-cp-pw2').value = '';
-      }
-    }
+let currentUser=null,students=[],activeStudent=null;
+const redirectBase=()=>BASE+'/';
 
-    // Close modal on overlay click
-    document.getElementById('parent-cp-modal').addEventListener('click', e => {
-      if (e.target === document.getElementById('parent-cp-modal')) closeParentCpModal();
-    });
+function pill(kind,text){const m={success:{bg:'#ecfdf5',c:'#047857'},warn:{bg:'#fffbeb',c:'#b45309'},danger:{bg:'#fef2f2',c:'#b91c1c'},neutral:{bg:'#f4f3ef',c:'#3a3f3c'}};const t=m[kind]||m.neutral;return `<span class="pill" style="background:${t.bg};color:${t.c}">${text}</span>`;}
+function qpill(q){if(!q)return'';if(q==='Excellent')return pill('success',q);if(q==='Good')return pill('warn',q);if(q==='Failed')return`<span class="pill pill-danger" style="font-weight:600">Failed</span>`;return pill('danger',q);}
 
-    async function signOut() {
-      await db.auth.signOut();
-      window.location.href = redirectBase() + 'index.html';
-    }
+async function init(){
+  const{data:{session}}=await db.auth.getSession();
+  if(!session){window.location.href=BASE+'/index.html';return;}
+  const{data:u}=await db.from('users').select('*').eq('email',session.user.email).single();
+  if(!u||u.role!=='parent'){
+    await db.auth.signOut();
+    window.location.href=BASE+'/index.html';return;
+  }
+  if(!u.is_active){
+    await db.auth.signOut();
+    window.location.href=BASE+'/index.html';return;
+  }
+  if(u.must_change_password){window.location.href=BASE+'/change-password.html';return;}
+  currentUser=u;
+  const initials=u.name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('parent-avatar').textContent=initials;
+  document.getElementById('parent-name-display').textContent=u.name;
+  document.getElementById('parent-email-display').textContent=session.user.email;
+  await loadStudents();
+}
 
-    init();
-  </script>
+const childColors=['#f59e0b','#0ea5e9','#10b981','#8b5cf6','#ef4444'];
+
+async function loadStudents(){
+  const{data}=await db.from('students').select('*').eq('parent_email',currentUser.email).order('name');
+  students=data||[];
+  const cl=document.getElementById('child-list');
+  if(students.length===0){cl.innerHTML='<div style="font-size:11px;color:#6b716d">No students linked to your account yet</div>';return;}
+  cl.innerHTML=students.map((s,i)=>`
+    <div class="child-row" id="child-row-${s.id}" style="opacity:${i===0?1:0.55}" onclick="selectStudent(${s.id})">
+      <div class="child-avatar" style="background:${childColors[i%childColors.length]}">${s.name.split(' ').map(p=>p[0]).join('').slice(0,2)}</div>
+      <div style="flex:1;min-width:0">
+        <div class="child-name">${s.name.split(' ')[0]}</div>
+        <div class="child-meta">${s.name}</div>
+      </div>
+      <span id="child-dot-${s.id}" style="width:6px;height:6px;border-radius:50%;background:#fbbf24;flex-shrink:0;display:${i===0?'block':'none'}"></span>
+    </div>`).join('');
+  if(students.length>0)selectStudent(students[0].id);
+}
+
+async function selectStudent(id){
+  activeStudent=students.find(s=>s.id===id);
+  if(!activeStudent)return;
+
+  // Update sidebar
+  students.forEach((s,i)=>{
+    const row=document.getElementById(`child-row-${s.id}`);const dot=document.getElementById(`child-dot-${s.id}`);
+    if(row)row.style.opacity=s.id===id?'1':'0.55';
+    if(dot)dot.style.display=s.id===id?'block':'none';
+  });
+
+  document.getElementById('no-student').style.display='none';
+  document.getElementById('student-content').style.display='block';
+  document.getElementById('logs-list').innerHTML='<div class="loading">Loading…</div>';
+
+  const idx=students.findIndex(s=>s.id===id);
+  const color=childColors[idx%childColors.length];
+  const initials=activeStudent.name.split(' ').map(p=>p[0]).join('').slice(0,2);
+  document.getElementById('hero-avatar').textContent=initials;
+  document.getElementById('hero-avatar').style.background=`linear-gradient(135deg,${color},${color}aa)`;
+  document.getElementById('hero-name').textContent=activeStudent.name;
+  document.getElementById('topbar-child').textContent=activeStudent.name;
+
+  const{data:logs}=await db.from('progress_logs').select('*').eq('student_id',id).order('date',{ascending:false});
+  const allLogs=logs||[];
+
+  document.getElementById('stat-sessions').textContent=allLogs.length;
+
+  if(allLogs.length>0){
+    const last=allLogs[0];
+    const lastDate=new Date(last.date).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    document.getElementById('stat-last').textContent=lastDate;
+    document.getElementById('stat-last-sub').textContent=last.sabaq_lines?`${last.sabaq_lines} lines sabaq`:'Session logged';
+    document.getElementById('last-updated').textContent=`Last updated ${lastDate}`;
+  } else {
+    document.getElementById('stat-last').textContent='—';document.getElementById('stat-last-sub').textContent='no logs yet';document.getElementById('last-updated').textContent='';
+  }
+
+  // Behavior this week
+  const weekAgo=new Date();weekAgo.setDate(weekAgo.getDate()-7);
+  const weekBehavior=allLogs.filter(l=>new Date(l.date)>=weekAgo&&l.behavior).map(l=>l.behavior);
+  const behaviorEl=document.getElementById('stat-behavior');
+  if(weekBehavior.length>0){
+    const sm={Excellent:3,Good:2,'Needs Work':1};
+    const avg=weekBehavior.reduce((s,b)=>s+(sm[b]||0),0)/weekBehavior.length;
+    const bval=avg>=2.5?'Excellent':avg>=1.5?'Good':'Needs Work';
+    behaviorEl.textContent=bval;
+    const bcolor={Excellent:'#047857',Good:'#b45309','Needs Work':'#b91c1c'}[bval];
+    behaviorEl.style.color=bcolor;
+  } else {behaviorEl.textContent='—';behaviorEl.style.color='';}
+
+  // Weekly streak strip
+  const weekDays=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);weekDays.push(d);}
+  const strip=document.getElementById('week-strip');
+  strip.innerHTML=weekDays.map(d=>{
+    const dStr=d.toISOString().split('T')[0];
+    const isToday=dStr===new Date().toISOString().split('T')[0];
+    const hasLog=allLogs.some(l=>l.date===dStr);
+    const dayLabel=['Su','Mo','Tu','We','Th','Fr','Sa'][d.getDay()];
+    let bg,color,border;
+    if(isToday){bg='#0b0f0d';color='#fff';border='none';}
+    else if(hasLog){bg='#ecfdf5';color='#047857';border='1px solid #6ee7b7';}
+    else{bg='#fafaf9';color='#9b9892';border='1px solid #eceae5';}
+    return `<div class="day-pill" style="background:${bg};color:${color};border:${border||'none'}"><span>${dayLabel}</span><span style="font-size:9px">${d.getDate()}</span></div>`;
+  }).join('');
+
+  renderLogs(allLogs);
+}
+
+function renderLogs(logs){
+  const el=document.getElementById('logs-list');
+  if(logs.length===0){el.innerHTML=`<div class="empty-state"><div class="big">📝</div>No progress logged yet. Check back after the next session.</div>`;return;}
+  el.innerHTML=logs.map(l=>{
+    const dateStr=new Date(l.date).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+    const sabaqFailed=l.sabaq_failed||l.sabaq_quality==='Failed';
+    const sabqiFailed=l.sabqi_failed||l.sabqi_quality==='Failed';
+    const manzilFailed=l.manzil_failed||l.manzil_quality==='Failed';
+    const sabaqVal=[l.sabaq_lines?`${l.sabaq_lines} lines`:null].filter(Boolean).join(' · ')||'—';
+    const sabqiVal=[l.sabqi_juz?`Juz ${l.sabqi_juz}`:null,l.sabqi_pages?`${l.sabqi_pages}p`:null].filter(Boolean).join(' · ')||'—';
+    const manzilVal=[l.manzil_pages!=null?`${l.manzil_pages}${l.manzil_fraction?' '+l.manzil_fraction:''} Juz`:(l.manzil_fraction?l.manzil_fraction+' Juz':null),l.manzil_juz].filter(Boolean).join(' · ')||'—';
+    return `<div class="log-block">
+      <div class="log-date">${dateStr}</div>
+      <div class="log-grid">
+        <div class="log-section${sabaqFailed?' log-section-failed':''}">
+          <div class="log-section-title">Sabaq</div>
+          <div class="log-section-val">${sabaqVal}</div>
+          <div style="margin-top:3px">${sabaqFailed?'<span class="pill pill-danger" style="font-weight:600">Failed</span>':qpill(l.sabaq_quality)}</div>
+        </div>
+        <div class="log-section${sabqiFailed?' log-section-failed':''}">
+          <div class="log-section-title">Sabqi</div>
+          <div class="log-section-val">${sabqiVal}</div>
+          <div style="margin-top:3px">${sabqiFailed?'<span class="pill pill-danger" style="font-weight:600">Failed</span>':qpill(l.sabqi_quality)}</div>
+        </div>
+        <div class="log-section${manzilFailed?' log-section-failed':''}">
+          <div class="log-section-title">Manzil</div>
+          <div class="log-section-val">${manzilVal}</div>
+          <div style="margin-top:3px">${manzilFailed?'<span class="pill pill-danger" style="font-weight:600">Failed</span>':qpill(l.manzil_quality)}</div>
+        </div>
+        <div class="log-section">
+          <div class="log-section-title">Behavior</div>
+          <div class="log-section-val">${l.behavior?qpill(l.behavior):'<span style="color:#737773">—</span>'}</div>
+        </div>
+      </div>
+      ${l.teacher_notes?`<div class="log-notes"><span class="log-notes-label">Teacher's Note</span>${l.teacher_notes}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function openCpModal(){document.getElementById('cp-modal').style.display='flex';document.getElementById('cp-pw').focus();}
+function closeCpModal(){document.getElementById('cp-modal').style.display='none';document.getElementById('cp-pw').value='';document.getElementById('cp-pw2').value='';document.getElementById('cp-error').style.display='none';document.getElementById('cp-success').style.display='none';}
+async function savePassword(){
+  const pw=document.getElementById('cp-pw').value,pw2=document.getElementById('cp-pw2').value;
+  const btn=document.getElementById('cp-btn'),errEl=document.getElementById('cp-error'),sucEl=document.getElementById('cp-success');
+  if(pw.length<8){errEl.textContent='Password must be at least 8 characters.';errEl.style.display='block';return;}
+  if(pw!==pw2){errEl.textContent='Passwords do not match.';errEl.style.display='block';return;}
+  btn.disabled=true;btn.textContent='Saving…';errEl.style.display='none';sucEl.style.display='none';
+  const{error}=await db.auth.updateUser({password:pw});
+  btn.disabled=false;btn.textContent='Update Password';
+  if(error){errEl.textContent=error.message;errEl.style.display='block';}
+  else{sucEl.textContent='Password updated!';sucEl.style.display='block';document.getElementById('cp-pw').value='';document.getElementById('cp-pw2').value='';}
+}
+document.getElementById('cp-modal').addEventListener('click',e=>{if(e.target===document.getElementById('cp-modal'))closeCpModal();});
+
+function switchTab(tab, btn) {
+  // Update nav
+  ['progress','sessions','settings'].forEach(t => {
+    const el = document.getElementById('nav-' + t);
+    if (el) el.className = 'nav-item' + (t === tab ? ' active' : '');
+  });
+  // Update topbar
+  const labels = {progress:'Progress', sessions:'Sessions', settings:'Settings'};
+  document.getElementById('topbar-page').textContent = labels[tab] || tab;
+  // Show/hide content
+  const studentContent = document.getElementById('student-content');
+  const noStudent = document.getElementById('no-student');
+  const tabSessions = document.getElementById('tab-sessions');
+  const tabSettings = document.getElementById('tab-settings');
+  studentContent.style.display = 'none';
+  noStudent.style.display = 'none';
+  tabSessions.style.display = 'none';
+  tabSettings.style.display = 'none';
+  if (tab === 'progress') {
+    if (activeStudent) studentContent.style.display = 'block';
+    else noStudent.style.display = 'flex';
+  } else if (tab === 'sessions') {
+    tabSessions.style.display = 'flex';
+    renderSessionsTab();
+  } else if (tab === 'settings') {
+    tabSettings.style.display = 'flex';
+    loadSettingsTab();
+  }
+}
+
+async function renderSessionsTab() {
+  const noStu = document.getElementById('sessions-no-student');
+  const wrap = document.getElementById('sessions-table-wrap');
+  const list = document.getElementById('sessions-list');
+  const count = document.getElementById('sessions-count');
+  if (!activeStudent) { noStu.style.display = 'block'; wrap.style.display = 'none'; return; }
+  noStu.style.display = 'none'; wrap.style.display = 'block';
+  list.innerHTML = '<div class="loading">Loading…</div>';
+  const { data: logs } = await db.from('progress_logs').select('*').eq('student_id', activeStudent.id).order('date', { ascending: false });
+  const allLogs = logs || [];
+  count.textContent = activeStudent.name + ' · ' + allLogs.length + ' sessions';
+  if (allLogs.length === 0) { list.innerHTML = '<div class="empty-state"><div class="big">📝</div>No sessions logged yet.</div>'; return; }
+  list.innerHTML = allLogs.map(l => {
+    const dateStr = new Date(l.date).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+    const sabaqStr = l.sabaq_lines ? l.sabaq_lines + ' lines' : '—';
+    const sabqiStr = [l.sabqi_juz ? 'Juz ' + l.sabqi_juz : null, l.sabqi_pages ? l.sabqi_pages + 'p' : null].filter(Boolean).join(' · ') || '—';
+    const manzilStr = [l.manzil_pages != null ? l.manzil_pages + (l.manzil_fraction ? ' ' + l.manzil_fraction : '') + ' Juz' : (l.manzil_fraction ? l.manzil_fraction + ' Juz' : null), l.manzil_juz].filter(Boolean).join(' · ') || '—';
+    return '<div class="table-row" style="grid-template-columns:1.2fr 1fr 1fr 1fr 1fr">' +
+      '<div style="font-size:11px;font-family:var(--mono, monospace);color:#737773">' + dateStr + '</div>' +
+      '<div style="font-size:12px">' + sabaqStr + ' ' + qpill(l.sabaq_quality) + '</div>' +
+      '<div style="font-size:12px">' + sabqiStr + ' ' + qpill(l.sabqi_quality) + '</div>' +
+      '<div style="font-size:12px">' + manzilStr + ' ' + qpill(l.manzil_quality) + '</div>' +
+      '<div style="font-size:12px">' + (l.behavior ? qpill(l.behavior) : '—') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function loadSettingsTab() {
+  const { data: { session } } = await db.auth.getSession();
+  if (session) document.getElementById('settings-email').textContent = session.user.email;
+  const list = document.getElementById('settings-children-list');
+  if (students.length === 0) { list.textContent = 'No children linked to your account.'; return; }
+  list.innerHTML = students.map(s => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eceae5">
+      <div style="font-weight:500">${s.name}</div>
+      <button class="btn-danger" style="font-size:11px;padding:4px 10px" onclick="removeChild(${s.id},'${s.name.replace(/'/g,"\'")}')">Remove</button>
+    </div>`).join('');
+}
+
+async function removeChild(id, name) {
+  if (!confirm('Remove ' + name + ' from your account? Their progress records stay with the school.')) return;
+  await db.from('students').update({ parent_email: null }).eq('id', id).eq('parent_email', currentUser.email);
+  students = students.filter(s => s.id !== id);
+  await loadStudents();
+  loadSettingsTab();
+}
+
+function openDeleteAccountModal() { document.getElementById('delete-account-modal').style.display = 'flex'; }
+function closeDeleteAccountModal() { document.getElementById('delete-account-modal').style.display = 'none'; document.getElementById('da-confirm').value = ''; document.getElementById('da-error').style.display = 'none'; }
+
+async function deleteAccount() {
+  const val = document.getElementById('da-confirm').value.trim();
+  const errEl = document.getElementById('da-error');
+  const btn = document.getElementById('da-btn');
+  if (val !== 'DELETE') { errEl.textContent = 'Please type DELETE to confirm.'; errEl.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Deleting…';
+  // Unlink students
+  await db.from('students').update({ parent_email: null }).eq('parent_email', currentUser.email);
+  // Delete user record
+  await db.from('users').delete().eq('email', currentUser.email);
+  // Sign out
+  await db.auth.signOut();
+  window.location.href = BASE + '/index.html';
+}
+
+async function signOut(){await db.auth.signOut();window.location.href=BASE+'/index.html';}
+init();
+</script>
 </body>
 </html>
