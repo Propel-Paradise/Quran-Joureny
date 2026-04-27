@@ -155,10 +155,10 @@
   <div class="workspace">
     <div class="topbar">
       <div class="breadcrumb">
-        <span id="topbar-child" style="color:#737773">Student</span>
+        <span id="topbar-child">Student</span>
         <span style="color:#d4d0ca">/</span>
+        <span class="active" id="topbar-page">Progress</span>
       </div>
-      <span class="crumb-active" id="topbar-page">Progress</span>
       <div class="topbar-right"></div>
     </div>
 
@@ -242,20 +242,22 @@
 
     <!-- SETTINGS TAB -->
     <div id="tab-settings" style="display:none;flex:1;overflow:auto;padding:20px 24px">
-      <div class="settings-card">
-        <h3>Account</h3>
-        <p class="desc">Signed in as <span id="settings-email" style="font-weight:500;color:#0f1411"></span></p>
-        <button class="btn-ghost" onclick="openCpModal()">Change Password</button>
-      </div>
-      <div class="settings-card">
-        <h3>Linked Children</h3>
-        <p class="desc">These students are linked to your account.</p>
-        <div id="settings-children-list" style="margin-bottom:14px;font-size:13px;color:#737773">Loading…</div>
-      </div>
-      <div class="settings-card danger">
-        <h3>Delete Account</h3>
-        <p class="desc">Permanently delete your parent account. Your children's progress records will be preserved for the school — only your login access is removed.</p>
-        <button class="btn-danger" onclick="openDeleteAccountModal()">Delete My Account</button>
+      <div style="max-width:560px;display:flex;flex-direction:column">
+        <div class="settings-card">
+          <h3>Account</h3>
+          <p class="desc">Signed in as <span id="settings-email" style="font-weight:500;color:#0f1411"></span></p>
+          <button class="btn-ghost" onclick="openCpModal()">Change Password</button>
+        </div>
+        <div class="settings-card">
+          <h3>Linked Children</h3>
+          <p class="desc">These students are linked to your account.</p>
+          <div id="settings-children-list" style="margin-bottom:14px;font-size:13px;color:#737773">Loading…</div>
+        </div>
+        <div class="settings-card danger">
+          <h3>Delete Account</h3>
+          <p class="desc">Permanently delete your parent account. Your children's progress records will be preserved for the school — only your login access is removed.</p>
+          <button class="btn-danger" onclick="openDeleteAccountModal()">Delete My Account</button>
+        </div>
       </div>
     </div>
 
