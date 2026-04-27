@@ -428,7 +428,6 @@ async function selectStudent(id){
   renderLogs(allLogs);
 
   // If sessions tab is active, refresh it too
-  const activeTab = ['sessions','settings'].find(t => document.getElementById('nav-'+t)?.classList.contains('active')) || 'progress';
   if (activeTab === 'sessions') renderSessionsTab();
   else if (activeTab === 'settings') loadSettingsTab();
 }
@@ -486,6 +485,8 @@ async function savePassword(){
   else{sucEl.textContent='Password updated!';sucEl.style.display='block';document.getElementById('cp-pw').value='';document.getElementById('cp-pw2').value='';}
 }
 document.getElementById('cp-modal').addEventListener('click',e=>{if(e.target===document.getElementById('cp-modal'))closeCpModal();});
+
+async function signOut() { await db.auth.signOut(); window.location.href = BASE + '/index.html'; }
 
 function switchTab(tab, btn) {
   // Update nav
