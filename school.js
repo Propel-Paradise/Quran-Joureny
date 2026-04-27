@@ -213,8 +213,9 @@ function populateStudentSelect(){
 function generateCode(){const c='ABCDEFGHJKMNPQRSTUVWXYZ23456789';return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join('')+'-'+Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join('');}
 async function loadInviteCode(){if(!currentUser.org_id)return;const{data:org}=await db.from('organizations').select('invite_code').eq('id',currentUser.org_id).single();if(org&&org.invite_code){document.getElementById('invite-code-display').textContent=org.invite_code;}else{const code=generateCode();await db.from('organizations').update({invite_code:code}).eq('id',currentUser.org_id);document.getElementById('invite-code-display').textContent=code;}}
 async function regenerateInviteCode(){if(!confirm('Generate a new invite code? The old code will stop working.'))return;const code=generateCode();await db.from('organizations').update({invite_code:code}).eq('id',currentUser.org_id);document.getElementById('invite-code-display').textContent=code;}
-function copyInviteCode(){const code=document.getElementById('invite-code-display').textContent;navigator.clipboard.writeText(code).then(()=>{const btn=event.target;btn.textContent='✓ Copied!';setTimeout(()=>btn.textContent='Copy Code',2000);});}
-function copyJoinLink(){const code=document.getElementById('invite-code-display').textContent;const url=`${BASE}/join.html?code=${encodeURIComponent(code)}`;navigator.clipboard.writeText(url).then(()=>{const btn=event.target;btn.textContent='✓ Copied!';setTimeout(()=>btn.textContent='Copy Join Link',2000);});}
+function flashInviteBanner(){const b=document.getElementById('invite-banner');if(!b)return;b.style.borderColor='#10b981';b.style.transition='border-color 0.2s';setTimeout(()=>{b.style.borderColor='';},1500);}
+function copyInviteCode(){const code=document.getElementById('invite-code-display').textContent;navigator.clipboard.writeText(code).then(()=>{flashInviteBanner();const btn=event.target;btn.textContent='✓ Copied!';setTimeout(()=>btn.textContent='Copy Code',2000);});}
+function copyJoinLink(){const code=document.getElementById('invite-code-display').textContent;const url=`${BASE}/join.html?code=${encodeURIComponent(code)}`;navigator.clipboard.writeText(url).then(()=>{flashInviteBanner();const btn=event.target;btn.textContent='✓ Copied!';setTimeout(()=>btn.textContent='Copy Join Link',2000);});}
 
 // ── MODALS ──────────────────────────────────────────────────
 function openAddStudentModal(){document.getElementById('add-student-modal').style.display='flex';document.getElementById('new-student-name').focus();}
@@ -282,7 +283,7 @@ async function viewStudentLogs(studentId,studentName){
 function closeModals(){
   document.querySelectorAll('.modal-overlay').forEach(el=>el.style.display='none');
   document.querySelectorAll('.error-box').forEach(el=>el.style.display='none');
-  ['new-student-name','log-sabaq-lines','log-sabqi-juz','log-sabqi-pages','log-manzil-count','log-manzil-juz','log-notes','cancel-confirm','cp-new-password','cp-new-password2','edit-student-name'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['new-student-name','log-sabaq-lines','log-sabqi-juz','log-sabqi-pages','log-manzil-count','log-manzil-juz','log-notes','cancel-confirm','cp-new-password','cp-new-password2','edit-student-name','new-parent-name','new-parent-email'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.querySelectorAll('#new-student-parents-list input[type=checkbox],#edit-student-parents-list input[type=checkbox]').forEach(cb=>cb.checked=false);
   Object.keys(qualityState).forEach(k=>qualityState[k]=null);
   manzilFraction=null;
@@ -311,6 +312,37 @@ async function saveEditStudent(){
   const{error}=await db.from('students').update({name,parent_emails:parentEmails}).eq('id',id);
   if(error){errEl.textContent=error.message;errEl.style.display='block';return;}
   closeModals();await loadStudents();await loadLogs();
+}
+
+async function addParentManually(){
+  const name=document.getElementById('new-parent-name').value.trim();
+  const email=document.getElementById('new-parent-email').value.trim().toLowerCase();
+  const errEl=document.getElementById('add-parent-error');
+  errEl.style.display='none';
+  if(!name||!email){errEl.textContent='Please fill in both fields.';errEl.style.display='block';return;}
+  // Check not already registered
+  const{data:existing}=await db.from('users').select('id').eq('email',email).single();
+  if(existing){errEl.textContent='A user with this email already exists.';errEl.style.display='block';return;}
+  const tempPw=Math.random().toString(36).slice(-8)+'!Q1';
+  // Create auth user
+  const{data:authData,error:authErr}=await db.auth.admin
+    ?{data:null,error:{message:'Use service role'}}
+    :{data:null,error:{message:'Use service role'}};
+  // Since we don't have service role, create via signUp and immediately sign back in as teacher
+  const currentSession=(await db.auth.getSession()).data.session;
+  const{error:signUpErr}=await db.auth.signUp({email,password:tempPw});
+  if(signUpErr&&!signUpErr.message.includes('already registered')){errEl.textContent=signUpErr.message;errEl.style.display='block';return;}
+  // Restore teacher session
+  if(currentSession){await db.auth.setSession({access_token:currentSession.access_token,refresh_token:currentSession.refresh_token});}
+  // Insert user row
+  const{error:insertErr}=await db.from('users').insert({
+    name,email,role:'parent',org_id:currentUser.org_id,
+    is_active:true,must_change_password:true,temp_password:tempPw
+  });
+  if(insertErr){errEl.textContent=insertErr.message;errEl.style.display='block';return;}
+  closeModals();
+  alert(`Parent added!\n\nEmail: ${email}\nTemp password: ${tempPw}\n\nShare these credentials with the parent — they'll be asked to change their password on first login.`);
+  await loadParents();
 }
 
 async function removeParent(email,name){
