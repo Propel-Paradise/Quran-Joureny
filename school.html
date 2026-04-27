@@ -327,7 +327,13 @@
     <h2>Add Student</h2><p class="sub">Add a new student to your class.</p>
     <div id="add-student-error" class="error-box" style="display:none"></div>
     <div class="field"><label>Student Name</label><input type="text" id="new-student-name" placeholder="e.g. Yusuf Ahmed" /></div>
-    <div class="field"><label>Linked Parent Account</label><select id="new-student-parent"><option value="">Select parent…</option></select></div>
+    <div class="field">
+      <label>Linked Parents</label>
+      <div id="new-student-parents-list" style="display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto;border:1px solid #e3e0da;border-radius:7px;padding:8px 10px;background:#fff">
+        <span style="font-size:12px;color:#737773">Loading parents…</span>
+      </div>
+      <div class="hint">Select one or more parents.</div>
+    </div>
     <div class="modal-actions">
       <button class="btn-secondary" onclick="closeModals()">Cancel</button>
       <button class="btn-primary" onclick="addStudent()">Add Student</button>
@@ -342,7 +348,13 @@
     <div id="edit-student-error" class="error-box" style="display:none"></div>
     <input type="hidden" id="edit-student-id" />
     <div class="field"><label>Student Name</label><input type="text" id="edit-student-name" placeholder="e.g. Yusuf Ahmed" /></div>
-    <div class="field"><label>Linked Parent Account</label><select id="edit-student-parent"><option value="">No parent linked</option></select></div>
+    <div class="field">
+      <label>Linked Parents</label>
+      <div id="edit-student-parents-list" style="display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto;border:1px solid #e3e0da;border-radius:7px;padding:8px 10px;background:#fff">
+        <span style="font-size:12px;color:#737773">Loading parents…</span>
+      </div>
+      <div class="hint">Select one or more parents.</div>
+    </div>
     <div class="modal-actions">
       <button class="btn-secondary" onclick="closeModals()">Cancel</button>
       <button class="btn-primary" onclick="saveEditStudent()">Save Changes</button>
@@ -538,8 +550,13 @@ async function loadParents(){
   let q=db.from('users').select('*').eq('role','parent').order('name');
   if(currentUser.org_id)q=db.from('users').select('*').eq('role','parent').eq('org_id',currentUser.org_id).order('name');
   const{data}=await q;parents=data||[];renderParents();
-  const sel=document.getElementById('new-student-parent');
-  sel.innerHTML='<option value="">Select parent…</option>'+parents.map(p=>`<option value="${p.email}">${p.name} (${p.email})</option>`).join('');
+  const checkboxHtml=parents.length===0
+    ?'<span style="font-size:12px;color:#737773">No parents registered yet.</span>'
+    :parents.map(p=>`<label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;padding:2px 0">
+        <input type="checkbox" value="${p.email}" style="accent-color:#10b981;width:14px;height:14px">
+        <span>${p.name} <span style="color:#737773;font-family:'IBM Plex Mono',monospace;font-size:11px">${p.email}</span></span>
+      </label>`).join('');
+  document.getElementById('new-student-parents-list').innerHTML=checkboxHtml;
   document.getElementById('nav-count-parents').textContent=parents.length;
 }
 
@@ -547,7 +564,7 @@ function renderParents(){
   const el=document.getElementById('parents-list');
   if(parents.length===0){el.innerHTML=`<div class="empty-state"><div class="big">👤</div>No parents yet. Share the invite code above with parents so they can register.</div>`;return;}
   el.innerHTML=parents.map(p=>{
-    const linked=students.filter(s=>s.parent_email===p.email).map(s=>s.name).join(', ')||'<span style="color:#737773">None linked</span>';
+    const linked=students.filter(s=>(s.parent_emails||[]).includes(p.email)).map(s=>s.name).join(', ')||'<span style="color:#737773">None linked</span>';
     return `<div class="table-row" style="grid-template-columns:1.5fr 1.5fr 1.5fr 80px">
       <div class="student-name">${p.name}</div>
       <div style="font-size:12px;color:#3a3f3c;font-family:'IBM Plex Mono',monospace">${p.email}</div>
@@ -579,14 +596,15 @@ function renderStudents(){
   el.innerHTML=filtered.map(s=>{
     const lastLog=logs.find(l=>l.student_id===s.id);
     const lastDate=lastLog?new Date(lastLog.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'—';
-    const linked=parents.find(p=>p.email===s.parent_email);
-    const parentLabel=linked?linked.name:'<span style="color:#737773;font-size:11px">No parent</span>';
+    const emails=s.parent_emails||[];
+    const linkedParents=emails.map(e=>{const p=parents.find(p=>p.email===e);return p?p.name:e;});
+    const parentLabel=linkedParents.length>0?linkedParents.join(', '):'<span style="color:#737773;font-size:11px">No parent</span>';
     const lastQ=lastLog?(lastLog.sabaq_quality||''):'';
     const qpillHtml=lastQ?qpill(lastQ):'';
     return `<div class="table-row" style="grid-template-columns:2fr 1.2fr 1fr 140px">
       <div>
         <div class="student-name">${s.name}</div>
-        <div class="student-sub">${s.parent_email?s.parent_email:'No parent linked'}</div>
+        <div class="student-sub">${emails.length>0?emails.join(', '):'No parent linked'}</div>
       </div>
       <div style="font-size:12px">${parentLabel}</div>
       <div style="display:flex;align-items:center;gap:6px">
@@ -683,8 +701,14 @@ function openEditStudentModal(id){
   const s=students.find(st=>st.id===id);if(!s)return;
   document.getElementById('edit-student-id').value=s.id;
   document.getElementById('edit-student-name').value=s.name;
-  const sel=document.getElementById('edit-student-parent');
-  sel.innerHTML='<option value="">No parent linked</option>'+parents.map(p=>`<option value="${p.email}"${p.email===s.parent_email?' selected':''}>${p.name} (${p.email})</option>`).join('');
+  const currentEmails=s.parent_emails||[];
+  const checkboxHtml=parents.length===0
+    ?'<span style="font-size:12px;color:#737773">No parents registered yet.</span>'
+    :parents.map(p=>`<label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;padding:2px 0">
+        <input type="checkbox" value="${p.email}"${currentEmails.includes(p.email)?' checked':''} style="accent-color:#10b981;width:14px;height:14px">
+        <span>${p.name} <span style="color:#737773;font-family:'IBM Plex Mono',monospace;font-size:11px">${p.email}</span></span>
+      </label>`).join('');
+  document.getElementById('edit-student-parents-list').innerHTML=checkboxHtml;
   document.getElementById('edit-student-modal').style.display='flex';
   document.getElementById('edit-student-name').focus();
 }
@@ -733,7 +757,7 @@ function closeModals(){
   document.querySelectorAll('.modal-overlay').forEach(el=>el.style.display='none');
   document.querySelectorAll('.error-box').forEach(el=>el.style.display='none');
   ['new-student-name','log-sabaq-lines','log-sabqi-juz','log-sabqi-pages','log-manzil-count','log-manzil-juz','log-notes','cancel-confirm','cp-new-password','cp-new-password2','edit-student-name'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  document.getElementById('new-student-parent').value='';
+  document.querySelectorAll('#new-student-parents-list input[type=checkbox],#edit-student-parents-list input[type=checkbox]').forEach(cb=>cb.checked=false);
   Object.keys(qualityState).forEach(k=>qualityState[k]=null);
   manzilFraction=null;
   document.querySelectorAll('.quality-btn').forEach(b=>b.className='quality-btn');
@@ -742,10 +766,10 @@ function closeModals(){
 
 async function addStudent(){
   const name=document.getElementById('new-student-name').value.trim();
-  const parentEmail=document.getElementById('new-student-parent').value;
+  const parentEmails=Array.from(document.querySelectorAll('#new-student-parents-list input[type=checkbox]:checked')).map(cb=>cb.value);
   const errEl=document.getElementById('add-student-error');
   if(!name){errEl.textContent='Please enter a student name.';errEl.style.display='block';return;}
-  const payload={name,parent_email:parentEmail||null};
+  const payload={name,parent_emails:parentEmails};
   if(currentUser.org_id)payload.org_id=currentUser.org_id;
   const{error}=await db.from('students').insert(payload);
   if(error){errEl.textContent=error.message;errEl.style.display='block';return;}
@@ -755,17 +779,22 @@ async function addStudent(){
 async function saveEditStudent(){
   const id=parseInt(document.getElementById('edit-student-id').value);
   const name=document.getElementById('edit-student-name').value.trim();
-  const parentEmail=document.getElementById('edit-student-parent').value;
+  const parentEmails=Array.from(document.querySelectorAll('#edit-student-parents-list input[type=checkbox]:checked')).map(cb=>cb.value);
   const errEl=document.getElementById('edit-student-error');
   if(!name){errEl.textContent='Please enter a student name.';errEl.style.display='block';return;}
-  const{error}=await db.from('students').update({name,parent_email:parentEmail||null}).eq('id',id);
+  const{error}=await db.from('students').update({name,parent_emails:parentEmails}).eq('id',id);
   if(error){errEl.textContent=error.message;errEl.style.display='block';return;}
   closeModals();await loadStudents();await loadLogs();
 }
 
 async function removeParent(email,name){
   if(!confirm(`Remove ${name}? Their linked students will be unlinked but student records stay.`))return;
-  await db.from('students').update({parent_email:null}).eq('parent_email',email);
+  // Remove this email from parent_emails array on all linked students
+  const linked=students.filter(s=>(s.parent_emails||[]).includes(email));
+  for(const s of linked){
+    const updated=(s.parent_emails||[]).filter(e=>e!==email);
+    await db.from('students').update({parent_emails:updated}).eq('id',s.id);
+  }
   await db.from('users').delete().eq('email',email);
   await loadParents();await loadStudents();
 }
