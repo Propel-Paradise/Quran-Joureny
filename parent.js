@@ -348,16 +348,20 @@ async function deleteAccount() {
 
 async function signOut(){await db.auth.signOut();window.location.href=BASE+'/index.html';}
 
-// Wait for Supabase to fully resolve the session (handles post-login token exchange)
-// before running init -- fixes the "kicked out immediately" bug on parent login.
-let _initDone = false;
-db.auth.onAuthStateChange((event, session) => {
-  if (_initDone) return;
-  if (event === 'SIGNED_OUT') { window.location.href = BASE + '/index.html'; return; }
-  if (session) { _initDone = true; init(session); }
+// FIX: On fresh login, Supabase exchanges the token asynchronously after redirect.
+// Calling getSession() immediately races against that exchange and returns null,
+// causing the instant kick-out. onAuthStateChange fires only once the session is
+// fully ready, so we use that as the trigger. getSession() fallback handles refreshes.
+let _initDone=false;
+db.auth.onAuthStateChange((event,session)=>{
+  if(_initDone)return;
+  if(event==='SIGNED_OUT'){window.location.href=BASE+'/index.html';return;}
+  if(session){_initDone=true;init(session);}
 });
-// Fallback: if session already exists (e.g. page refresh), run immediately
-db.auth.getSession().then(({ data: { session } }) => {
-  if (session && !_initDone) { _initDone = true; init(session); }
-  else if (!session && !_initDone) { window.location.href = BASE + '/index.html'; }
+db.auth.getSession().then(({data:{session}})=>{
+  if(session&&!_initDone){_initDone=true;init(session);}
+  else if(!session&&!_initDone){
+    // Give onAuthStateChange a moment to fire before giving up
+    setTimeout(()=>{if(!_initDone)window.location.href=BASE+'/index.html';},2000);
+  }
 });
