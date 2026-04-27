@@ -13,8 +13,7 @@ const todayStr=()=>localDateStr(new Date());
 function pill(kind,text){const m={success:{bg:'#ecfdf5',c:'#047857'},warn:{bg:'#fffbeb',c:'#b45309'},danger:{bg:'#fef2f2',c:'#b91c1c'},neutral:{bg:'#f4f3ef',c:'#3a3f3c'}};const t=m[kind]||m.neutral;return `<span class="pill" style="background:${t.bg};color:${t.c}">${text}</span>`;}
 function qpill(q){if(!q)return'';if(q==='Excellent')return pill('success',q);if(q==='Good')return pill('warn',q);if(q==='Failed')return`<span class="pill pill-danger" style="font-weight:600">Failed</span>`;return pill('danger',q);}
 
-async function init(){
-  const{data:{session}}=await db.auth.getSession();
+async function init(session){
   if(!session){window.location.href=BASE+'/index.html';return;}
   const{data:u}=await db.from('users').select('*').eq('email',session.user.email).single();
   if(!u||u.role!=='parent'){
@@ -348,4 +347,17 @@ async function deleteAccount() {
 }
 
 async function signOut(){await db.auth.signOut();window.location.href=BASE+'/index.html';}
-init();
+
+// Wait for Supabase to fully resolve the session (handles post-login token exchange)
+// before running init -- fixes the "kicked out immediately" bug on parent login.
+let _initDone = false;
+db.auth.onAuthStateChange((event, session) => {
+  if (_initDone) return;
+  if (event === 'SIGNED_OUT') { window.location.href = BASE + '/index.html'; return; }
+  if (session) { _initDone = true; init(session); }
+});
+// Fallback: if session already exists (e.g. page refresh), run immediately
+db.auth.getSession().then(({ data: { session } }) => {
+  if (session && !_initDone) { _initDone = true; init(session); }
+  else if (!session && !_initDone) { window.location.href = BASE + '/index.html'; }
+});
