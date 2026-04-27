@@ -42,6 +42,13 @@
     .success-screen p{font-size:13px;color:#9aa19d;margin-bottom:20px;}
     .not-found{text-align:center;padding:20px 0;color:#6b716d;font-size:13px;}
   </style>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0b0f0d">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Quran Journey">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
 <body>
   <div class="card">
@@ -103,6 +110,7 @@
         const resp=await fetch(`${SUPABASE_URL}/functions/v1/create-checkout-session`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SUPABASE_KEY}`},body:JSON.stringify({org_name:currentOrg.name,email:currentOrg.email,success_url:BASE+'/reactivate.html?success=1&email='+encodeURIComponent(currentOrg.email),cancel_url:BASE+'/reactivate.html?email='+encodeURIComponent(currentOrg.email)})});
         const result=await resp.json();
         if(result.error){errEl.textContent=result.error;errEl.style.display='block';btn.disabled=false;btn.textContent='Reactivate — $19.99/month →';return;}
+        if(result.reactivated){window.location.href=BASE+'/index.html';return;}
         window.location.href=result.url;return;
       }
     }
